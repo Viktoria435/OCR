@@ -1,3 +1,4 @@
+import AgentData from "../components/AgentData";
 import FileHistory from "../components/FileHistory";
 import FileUploader from "../components/FileUploader";
 import Loading from "../components/Loading";
@@ -7,7 +8,7 @@ import { useFileUpload } from "../context/fileContext";
 const MainPage = () => {
    const { isLoading } = useFileUpload();
    return (
-      <div className="grid grid-cols-[1fr_2fr] w-full h-screen overflow-hidden">
+      <div className="grid grid-cols-[1fr_2fr_1fr] w-full h-screen overflow-hidden divide-x-2 divide-gray-500">
          {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/20 ">
                <Loading />
@@ -26,6 +27,10 @@ const MainPage = () => {
          <div className="flex flex-col p-8 gap-y-5 overflow-hidden flex-grow">
             <p className="text-[#434343] font-bold text-xl underline">Output</p>
             <OutputComponent />
+         </div>
+         <div className="flex flex-col p-8 gap-y-5 overflow-hidden flex-grow">
+            <p className="text-[#434343] font-bold text-xl underline">Agent</p>
+            <AgentData />
          </div>
       </div>
    );

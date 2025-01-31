@@ -24,7 +24,7 @@ const FileUploader = () => {
 
    return (
       <div className="flex flex-col">
-         <div className="bg-white flex flex-col items-center p-4 gap-y-10">
+         <div className="bg-white flex rounded-md flex-col items-center p-4 gap-y-10">
             <label className="border w-full border-gray-200 overflow-hidden text-black text-start px-2 text-lg cursor-pointer">
                {fileName}
                <input

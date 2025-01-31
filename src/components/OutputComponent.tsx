@@ -5,7 +5,7 @@ const OutputComponent = () => {
    const { uploadedData } = useFileUpload();
 
    return (
-      <div className="bg-white text-black text-start px-4 text-lg flex-grow overflow-auto">
+      <div className="bg-white text-black rounded-md text-start px-4 text-lg flex-grow overflow-auto">
          <div className="py-2 h-full">
             {uploadedData ? (
                <ReactMarkdown>{uploadedData}</ReactMarkdown>
