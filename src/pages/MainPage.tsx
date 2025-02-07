@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import AgentData from "../components/AgentData";
 import FileHistory from "../components/FileHistory";
 import FileUploader from "../components/FileUploader";
@@ -6,7 +7,13 @@ import OutputComponent from "../components/OutputComponent";
 import { useFileUpload } from "../context/fileContext";
 
 const MainPage = () => {
-   const { isLoading } = useFileUpload();
+   const { isLoading, fetchMessages } = useFileUpload();
+
+   useEffect(() => {
+      fetchMessages(100, 0); 
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, []);
+
    return (
       <div className="grid grid-cols-[1fr_2fr_1fr] w-full h-screen overflow-hidden divide-x-2 divide-gray-500">
          {isLoading && (

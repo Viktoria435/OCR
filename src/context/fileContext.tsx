@@ -1,12 +1,17 @@
 import { createContext, useContext, ReactNode, useState } from "react";
-import { uploadFileRequest } from "../api/fileApi";
+import { getMessagesRequest, Message, uploadFileRequest } from "../api/fileApi";
 
 interface FileUploadContextType {
    uploadFile: (file: File) => void;
    uploadedData: string | null;
    error: string | null;
-   uploadedFiles: string[];
+   uploadedFiles: Message[];
    isLoading: boolean;
+   fetchMessages: (pageSize: number, pageIndex: number) => void;
+   selectedFileText: string | null;
+   setSelectedFileText: (text: string) => void;
+   selectedFileId: string | null;
+   setSelectedFileId: (text: string) => void;
 }
 
 const FileUploadContext = createContext<FileUploadContextType | undefined>(
@@ -16,22 +21,26 @@ const FileUploadContext = createContext<FileUploadContextType | undefined>(
 export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    const [uploadedData, setUploadedData] = useState<string | null>(null);
    const [error, setError] = useState<string | null>(null);
-   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
    const [isLoading, setIsLoading] = useState<boolean>(false);
+   const [uploadedFiles, setUploadedFiles] = useState<Message[]>([]);
+   const [selectedFileText, setSelectedFileText] = useState<string | null>(
+      null
+   );
+   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
 
    const uploadFile = async (file: File) => {
       setIsLoading(true);
       try {
          const response = await uploadFileRequest(file);
-         const fileName = file.name;
-
-         setUploadedFiles((prevFiles) => [...prevFiles, fileName]);
          if (!response.successful) {
-            setError(response.error.message);
+            setError(response.error?.message || "Unknown error occurred");
             setUploadedData(null);
          } else {
             setUploadedData(response.data.text);
             setError(null);
+            setSelectedFileText(null);
+            setSelectedFileId(response.data.id);
+            await fetchMessages(100, 0);
          }
       } catch (err: unknown) {
          if (err instanceof Error) {
@@ -46,9 +55,36 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       }
    };
 
+   const fetchMessages = async (pageSize: number, pageIndex: number) => {
+      try {
+         const response = await getMessagesRequest(pageSize, pageIndex);
+         if (!response.successful) {
+            setError(response.error?.message || "Failed to load messages");
+            return;
+         }
+         setUploadedFiles(response.data.data);
+      } catch (err: unknown) {
+         console.error("Error fetching messages:", err);
+         setError("Failed to fetch messages");
+      } finally {
+         setIsLoading(false);
+      }
+   };
+
    return (
       <FileUploadContext.Provider
-         value={{ uploadFile, uploadedData, error, uploadedFiles, isLoading }}
+         value={{
+            uploadFile,
+            uploadedData,
+            error,
+            uploadedFiles,
+            isLoading,
+            fetchMessages,
+            setSelectedFileText,
+            selectedFileText,
+            selectedFileId,
+            setSelectedFileId,
+         }}
       >
          {children}
       </FileUploadContext.Provider>
