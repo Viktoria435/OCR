@@ -1,35 +1,11 @@
 import api from ".";
-
-export interface Message {
-   id: string;
-   text: string;
-   filename: string;
-   datetimeInserted: string;
-   datetimeUpdated: string;
-}
-
-export interface UploadFileResponse {
-   data: Message;
-   successful: boolean;
-   error?: {
-      message: string;
-   } | null;
-}
-
-export interface GetMessagesResponse {
-   data: {
-      data: Message[];
-      paging: {
-         pageSize: number;
-         pageIndex: number;
-         totalCount: number;
-      };
-   };
-   successful: boolean;
-   error?: {
-      message: string;
-   } | null;
-}
+import {
+   GetChatMessagesResponse,
+   GetMessagesResponse,
+   SendMessageRequest,
+   SendMessageResponse,
+   UploadFileResponse,
+} from "../types/Interface";
 
 export const uploadFileRequest = async (
    file: File
@@ -39,7 +15,7 @@ export const uploadFileRequest = async (
 
    try {
       const response = await api.post<UploadFileResponse>(
-         "/api/report/generate",
+         "/api/report",
          formData,
          {
             headers: {
@@ -55,7 +31,7 @@ export const uploadFileRequest = async (
    }
 };
 
-export const getMessagesRequest = async (
+export const getAllReportsRequest = async (
    pageSize: number,
    pageIndex: number
 ): Promise<GetMessagesResponse> => {
@@ -68,5 +44,73 @@ export const getMessagesRequest = async (
    } catch (error: unknown) {
       console.error("Error fetching messages:", error);
       throw new Error("Failed to fetch messages");
+   }
+};
+
+export const getReportByIdRequest = async (
+   reportId: string
+): Promise<UploadFileResponse> => {
+   try {
+      const response = await api.get<UploadFileResponse>(
+         `/api/report/${reportId}`
+      );
+      return response.data;
+   } catch (error: unknown) {
+      if (error instanceof Error) {
+         console.error("Error sending message:", error.message);
+      } else {
+         console.error("Unknown error:", error);
+      }
+      throw new Error("Failed to send message");
+   }
+};
+
+export const getChatMessagesRequest = async (
+   reportId: string
+): Promise<GetChatMessagesResponse> => {
+   try {
+      const response = await api.get<GetChatMessagesResponse>(
+         `/api/message/${reportId}/all`
+      );
+      return response.data;
+   } catch (error: unknown) {
+      console.error("Error fetching messages:", error);
+      throw new Error("Failed to fetch messages");
+   }
+};
+
+export const sendMessageRequest = async (
+   reportId: string,
+   userMessage: string
+): Promise<SendMessageResponse> => {
+   const requestData: SendMessageRequest = {
+      text: userMessage,
+   };
+   try {
+      const response = await api.post<SendMessageResponse>(
+         `/api/message/${reportId}`,
+         requestData
+      );
+      return response.data;
+   } catch (error: unknown) {
+      if (error instanceof Error) {
+         console.error("Error sending message:", error.message);
+      } else {
+         console.error("Unknown error:", error);
+      }
+      throw new Error("Failed to send message");
+   }
+};
+
+export const deleteFilesHistoryRequest = async (): Promise<unknown> => {
+   try {
+      const response = await api.delete("/api/report/all");
+      if (response.data.successful) {
+         return response.data.data;
+      } else {
+         throw new Error(response.data.error.message);
+      }
+   } catch (error: unknown) {
+      console.error("Error deleting all messages:", error);
    }
 };
