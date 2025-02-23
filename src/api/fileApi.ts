@@ -4,6 +4,7 @@ import {
    GetMessagesResponse,
    SendMessageRequest,
    SendMessageResponse,
+   UploadConsultReport,
    UploadFileResponse,
 } from "../types/Interface";
 
@@ -112,5 +113,19 @@ export const deleteFilesHistoryRequest = async (): Promise<unknown> => {
       }
    } catch (error: unknown) {
       console.error("Error deleting all messages:", error);
+   }
+};
+
+export const generateConsultReport = async (
+   reportId: string
+): Promise<UploadConsultReport> => {
+   try {
+      const response = await api.post<UploadConsultReport>(
+         `/api/consult/${reportId}/generate`
+      );
+      return response.data;
+   } catch (error: unknown) {
+      console.error("Error fetching messages:", error);
+      throw new Error("Failed to fetch messages");
    }
 };

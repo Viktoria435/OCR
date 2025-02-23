@@ -26,6 +26,7 @@ interface FileUploadContextType {
    setFileReport: (text: string) => void;
    setFileChanges: (text: string) => void;
    deleteFilesHistory: () => void;
+   setIsLoading: (isLoading: boolean) => void; 
 }
 
 const FileUploadContext = createContext<FileUploadContextType | undefined>(
@@ -176,6 +177,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             sendChatMessage,
             getChatDataById,
             deleteFilesHistory,
+            setIsLoading
          }}
       >
          {children}

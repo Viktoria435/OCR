@@ -8,6 +8,7 @@ import { useFileUpload } from "../context/fileContext";
 import PatientChanges from "../components/PatientChanges";
 import AgentUploader from "../components/AgentUploader";
 import DeleteHistory from "../components/DeleteHistory";
+import ConsultButton from "../components/ConsultButton";
 
 const MainPage = () => {
    const { isLoading, fetchMessages } = useFileUpload();
@@ -36,7 +37,12 @@ const MainPage = () => {
             <DeleteHistory />
          </div>
          <div className="flex flex-col p-8 gap-y-5 overflow-hidden">
+            <div className="flex relative justify-center w-full">
             <p className="text-[#434343] font-bold text-xl underline">Output</p>
+            <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+            <ConsultButton/>
+            </div>
+            </div>
             <div className="flex-grow overflow-auto h-full">
                <OutputComponent />
             </div>

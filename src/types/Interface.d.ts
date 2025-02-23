@@ -65,3 +65,11 @@ export interface SendMessageResponse {
       message: string;
    };
 }
+
+export interface UploadConsultReport {
+   data: string;
+   successful: boolean;
+   error?: {
+      message: string;
+   } | null;
+}
