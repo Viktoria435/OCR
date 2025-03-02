@@ -64,6 +64,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             setFileReport(response.data.report);
             setFileChanges(response.data.changes);
             setSelectedFileId(response.data.id);
+            setIsEdited(false);
             getAllMessages(response.data.id);
             fetchMessages(100, 0);
          }
@@ -105,6 +106,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setFileReport(response.data.report);
          setFileChanges(response.data.changes);
          getAllMessages(response.data.id);
+         setIsEdited(false);
       } catch (err: unknown) {
          console.error("Error fetching messages:", err);
          setError("Failed to fetch messages");
