@@ -129,3 +129,35 @@ export const generateConsultReport = async (
       throw new Error("Failed to fetch messages");
    }
 };
+
+export const replaceReport = async (
+   reportId: string,
+   text: string
+): Promise<UploadFileResponse> => {
+   try {
+      const response = await api.patch<UploadFileResponse>(
+         `/api/report/${reportId}/report`,
+         { text }
+      );
+      return response.data;
+   } catch (error: unknown) {
+      console.error("Error fetching messages:", error);
+      throw new Error("Failed to fetch messages");
+   }
+};
+
+export const replaceReportChanges = async (
+   reportId: string,
+   text: string
+): Promise<UploadFileResponse> => {
+   try {
+      const response = await api.patch<UploadFileResponse>(
+         `/api/report/${reportId}/changes`,
+         { text }
+      );
+      return response.data;
+   } catch (error: unknown) {
+      console.error("Error fetching messages:", error);
+      throw new Error("Failed to fetch messages");
+   }
+};

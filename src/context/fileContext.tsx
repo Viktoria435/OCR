@@ -27,6 +27,12 @@ interface FileUploadContextType {
    setFileChanges: (text: string) => void;
    deleteFilesHistory: () => void;
    setIsLoading: (isLoading: boolean) => void; 
+   isEdited: boolean;
+   setIsEdited: (isEdited: boolean) => void;
+   editingReport: string | null;
+   setEditingReport: (text: string) => void;
+   editingChanges: string | null;
+   setEditingChanges: (text: string) => void;
 }
 
 const FileUploadContext = createContext<FileUploadContextType | undefined>(
@@ -38,9 +44,14 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    const [isLoading, setIsLoading] = useState<boolean>(false);
    const [uploadedFiles, setUploadedFiles] = useState<Message[]>([]);
    const [chatData, setChatData] = useState<Chat[]>([]);
+   const [isEdited, setIsEdited] = useState<boolean>(false);
    const [fileReport, setFileReport] = useState<string | null>(null);
    const [fileChanges, setFileChanges] = useState<string | null>(null);
    const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
+   const [editingReport, setEditingReport] = useState<string | null>(null);
+   const [editingChanges, setEditingChanges] = useState<string | null>(null);
+
+
 
    const uploadFile = async (file: File) => {
       setIsLoading(true);
@@ -158,6 +169,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       }
    };
 
+
    return (
       <FileUploadContext.Provider
          value={{
@@ -177,7 +189,13 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             sendChatMessage,
             getChatDataById,
             deleteFilesHistory,
-            setIsLoading
+            setIsLoading,
+            isEdited,
+            setIsEdited,
+            setEditingReport,
+            editingReport,
+            setEditingChanges,
+            editingChanges
          }}
       >
          {children}

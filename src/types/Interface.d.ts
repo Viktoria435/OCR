@@ -2,6 +2,7 @@ export interface Message {
    id: string;
    report: string;
    changes: string;
+   originalText: string;
    filename: string;
    datetimeInserted: string;
    datetimeUpdated: string;

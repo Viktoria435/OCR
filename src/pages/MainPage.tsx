@@ -9,6 +9,7 @@ import PatientChanges from "../components/PatientChanges";
 import AgentUploader from "../components/AgentUploader";
 import DeleteHistory from "../components/DeleteHistory";
 import ConsultButton from "../components/ConsultButton";
+import SaveButton from "../components/SaveButton";
 
 const MainPage = () => {
    const { isLoading, fetchMessages } = useFileUpload();
@@ -41,6 +42,9 @@ const MainPage = () => {
             <p className="text-[#434343] font-bold text-xl underline">Output</p>
             <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
             <ConsultButton/>
+            </div>
+            <div className="absolute left-0 top-1/2 transform -translate-y-1/2">
+            <SaveButton/>
             </div>
             </div>
             <div className="flex-grow overflow-auto h-full">
