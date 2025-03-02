@@ -24,3 +24,7 @@ textarea {
 textarea::-webkit-scrollbar {
   display: none;
 }
+
+.prose h2 {
+  @apply block text-xl mt-3 mb-3 font-bold;
+}

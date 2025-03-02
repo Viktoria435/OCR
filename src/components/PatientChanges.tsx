@@ -26,10 +26,8 @@ const PatientChanges = () => {
   };
 
   return (
-    // Добавляем flex и flex-col, чтобы растягивать вложенные элементы
-    <div className="bg-white relative text-black rounded-md text-start px-4 text-lg flex-grow overflow-auto h-full flex flex-col">
-      {/* Кнопка редактирования можно оставить в отдельном небольшом блоке */}
-      <div className="py-2 relative">
+    <div className="bg-white prose relative text-black rounded-md text-start px-4 text-lg flex-grow overflow-auto h-full flex flex-col">
+      <div className="pb-2 relative">
         {fileChanges && (
           <button
             className="absolute top-2 right-2 text-xl text-gray-500"

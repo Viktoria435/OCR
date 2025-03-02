@@ -26,10 +26,8 @@ const PatientChanges = () => {
   };
 
   return (
-    // Добавили flex flex-col, чтобы можно было растягивать содержимое по высоте
-    <div className="bg-white relative text-black rounded-md text-start px-4 text-lg flex-grow overflow-auto h-full flex flex-col">
-      {/* Верхний блок, где лежит кнопка */}
-      <div className="py-2 relative">
+    <div className="bg-white prose relative text-black rounded-md text-start px-4 text-lg flex-grow overflow-auto h-full flex flex-col">
+      <div className="pb-2 relative">
         {fileReport && (
           <button
             className="absolute top-2 right-2 text-xl text-gray-500"
@@ -52,14 +50,12 @@ const PatientChanges = () => {
           </button>
         )}
       </div>
-      {/* Основная зона, растягиваем на всю оставшуюся высоту (flex-1) */}
       <div className="flex-1">
         {isEditing ? (
           <textarea
             value={editText}
             onChange={handleChange}
             onBlur={handleBlur}
-            // Убираем фиксированную высоту и делаем растяжение на всю доступную
             className="w-full h-full resize-none focus:outline-none"
           />
         ) : fileReport ? (
