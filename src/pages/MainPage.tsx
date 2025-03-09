@@ -1,21 +1,35 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AgentData from "../components/AgentData";
 import FileHistory from "../components/FileHistory";
-import FileUploader from "../components/FileUploader";
 import Loading from "../components/Loading";
 import OutputComponent from "../components/OutputComponent";
 import { useFileUpload } from "../context/fileContext";
-import PatientChanges from "../components/PatientChanges";
 import AgentUploader from "../components/AgentUploader";
-import DeleteHistory from "../components/DeleteHistory";
-import ConsultButton from "../components/ConsultButton";
-import SaveButton from "../components/SaveButton";
+import ConsultButton from "../components/Buttons/ConsultButton";
+import SaveButton from "../components/Buttons/SaveButton";
+import UploadFileButton from "../components/Buttons/UploadFileButton";
+import Modal from "../components/Modals/Modal";
+import UploaderFileModal from "../components/Modals/UploaderFileModal";
+import SearchPatient from "../components/SearchPatient";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+
 
 const MainPage = () => {
-   const { isLoading, fetchMessages } = useFileUpload();
+   const navigate = useNavigate();
+   const { isLoading, getReports } = useFileUpload();
+   const [isOpen, setIsOpen] = useState(false);
 
    useEffect(() => {
-      fetchMessages(100, 0);
+      const token = Cookies.get("accessToken");
+      if (!token) {
+         navigate("auth/login");
+         return;
+      }
+   }, [navigate, getReports]);
+
+   useEffect(() => {
+      getReports(100, 0);
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, []);
 
@@ -27,35 +41,40 @@ const MainPage = () => {
             </div>
          )}
          <div className="flex flex-col p-8 gap-y-5 overflow-hidden flex-grow">
-            <p className="text-[#434343] font-bold text-xl underline">
+            {/* <p className="text-[#434343] font-bold text-xl underline">
                Query & Upload
             </p>
-            <FileUploader />
+            <FileUploader /> */}
             <p className="text-[#434343] font-bold text-xl underline">
-               History
+               Patients
             </p>
+            <SearchPatient />
             <FileHistory />
-            <DeleteHistory />
+            <UploadFileButton onClick={() => setIsOpen(true)} />
+            {/* <DeleteHistory /> */}
          </div>
          <div className="flex flex-col p-8 gap-y-5 overflow-hidden">
             <div className="flex relative justify-center w-full">
-            <p className="text-[#434343] font-bold text-xl underline">Output</p>
-            <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
-            <ConsultButton/>
-            </div>
-            <div className="absolute left-0 top-1/2 transform -translate-y-1/2">
-            <SaveButton/>
-            </div>
+               <p className="text-[#434343] font-bold text-xl underline">
+                  Output
+               </p>
+               <div className="absolute left-0 top-1/2 transform -translate-y-1/2"></div>
+               <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+                  <ConsultButton />
+               </div>
+               <div className="absolute right-36 top-1/2 transform -translate-y-1/2">
+                  <SaveButton />
+               </div>
             </div>
             <div className="flex-grow overflow-auto h-full">
                <OutputComponent />
             </div>
-            <p className="text-[#434343] font-bold text-xl underline">
+            {/* <p className="text-[#434343] font-bold text-xl underline">
                Patient's changes
             </p>
             <div className="flex-grow overflow-auto h-full">
                <PatientChanges />
-            </div>
+            </div> */}
          </div>
 
          <div className="flex flex-col p-8 gap-y-5 overflow-hidden flex-grow">
@@ -63,6 +82,12 @@ const MainPage = () => {
             <AgentData />
             <AgentUploader />
          </div>
+
+         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+            <div className="text-center">
+               <UploaderFileModal onClose={() => setIsOpen(false)} />
+            </div>
+         </Modal>
       </div>
    );
 };

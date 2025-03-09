@@ -4,9 +4,12 @@ import {
    getChatMessagesRequest,
    getAllReportsRequest,
    sendMessageRequest,
-   uploadFileRequest,
    getReportByIdRequest,
    deleteFilesHistoryRequest,
+   uploadFilesRequest,
+   uploadFilesToReportRequest,
+   deleteFileFromReportRequest,
+   getSearchReportsRequest,
 } from "../api/fileApi";
 
 interface FileUploadContextType {
@@ -21,8 +24,9 @@ interface FileUploadContextType {
    getChatDataById: (chatId: string) => void;
    getAllMessages: (chatId: string) => void;
    sendChatMessage: (chatId: string, text: string) => void;
-   uploadFile: (file: File) => void;
-   fetchMessages: (pageSize: number, pageIndex: number) => void;
+   uploadFiles: (files: File[], reportId?: string) => void;
+   DeleteFileFromReport: (reportId: string, documentId: string) => void;
+   getReports: (pageSize: number, pageIndex: number, searchValue?:string) => void;
    setFileReport: (text: string) => void;
    setFileChanges: (text: string) => void;
    deleteFilesHistory: () => void;
@@ -53,20 +57,49 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
 
 
-   const uploadFile = async (file: File) => {
+   // const uploadFile = async (file: File) => {
+   //    setIsLoading(true);
+   //    try {
+   //       const response = await uploadFileRequest(file);
+   //       if (!response.successful) {
+   //          setError(response.error?.message || "Unknown error occurred");
+   //       } else {
+   //          setError(null);
+   //          setFileReport(response.data.report);
+   //          setFileChanges(response.data.changes);
+   //          setSelectedFileId(response.data.id);
+   //          setIsEdited(false);
+   //          getAllMessages(response.data.id);
+   //          fetchMessages(100, 0);
+   //       }
+   //    } catch (err: unknown) {
+   //       if (err instanceof Error) {
+   //          console.error("Error uploading file:", err.message);
+   //       } else {
+   //          console.error("Unknown error:", err);
+   //       }
+   //       setError("File upload failed");
+   //    } finally {
+   //       setIsLoading(false);
+   //    }
+   // };
+
+   const uploadFiles = async (files: File[], reportId?: string) => {
       setIsLoading(true);
       try {
-         const response = await uploadFileRequest(file);
+         const response = reportId
+         ? await uploadFilesToReportRequest(files, reportId)
+         : await uploadFilesRequest(files);
          if (!response.successful) {
             setError(response.error?.message || "Unknown error occurred");
          } else {
             setError(null);
             setFileReport(response.data.report);
-            setFileChanges(response.data.changes);
+            // setFileChanges(response.data.changes);
             setSelectedFileId(response.data.id);
             setIsEdited(false);
             getAllMessages(response.data.id);
-            fetchMessages(100, 0);
+            getReports(100, 0);
          }
       } catch (err: unknown) {
          if (err instanceof Error) {
@@ -80,17 +113,22 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       }
    };
 
-   const fetchMessages = async (pageSize: number, pageIndex: number) => {
+   const getReports = async (pageSize: number, pageIndex: number, searchValue?: string) => {
       try {
-         const response = await getAllReportsRequest(pageSize, pageIndex);
+         const response = searchValue
+         ? await getSearchReportsRequest(pageSize, pageIndex, searchValue)
+         : await getAllReportsRequest(pageSize, pageIndex);
          if (!response.successful) {
             setError(response.error?.message || "Failed to load messages");
             return;
          }
+         
          setUploadedFiles(response.data.data);
-      } catch (err: unknown) {
+      }
+       catch (err: unknown) {
          console.error("Error fetching messages:", err);
          setError("Failed to fetch messages");
+         setUploadedFiles([]);
       } finally {
          setIsLoading(false);
       }
@@ -104,7 +142,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             return;
          }
          setFileReport(response.data.report);
-         setFileChanges(response.data.changes);
+         // setFileChanges(response.data.changes);
          getAllMessages(response.data.id);
          setIsEdited(false);
       } catch (err: unknown) {
@@ -162,7 +200,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    const deleteFilesHistory = async () => {
       try {
          await deleteFilesHistoryRequest();
-         fetchMessages(100, 0);
+         getReports(100, 0);
          setFileChanges(null);
          setFileReport(null);
          setChatData([]);
@@ -171,15 +209,40 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       }
    };
 
+   const DeleteFileFromReport = async (reportId: string, documentId: string) => {
+      try {
+         const response = await deleteFileFromReportRequest (reportId, documentId)
+         if (!response.successful) {
+            setError(response.error?.message || "Unknown error occurred");
+         } else {
+            setError(null);
+            setFileReport(response.data.report);
+            setSelectedFileId(response.data.id);
+            setIsEdited(false);
+            getAllMessages(response.data.id);
+            getReports(100, 0);
+         }
+      } catch (err: unknown) {
+         if (err instanceof Error) {
+            console.error("Error deleting file:", err.message);
+         } else {
+            console.error("Unknown error:", err);
+         }
+         setError("File delete failed");
+      } finally {
+         setIsLoading(false);
+      }
+   };
+
 
    return (
       <FileUploadContext.Provider
          value={{
-            uploadFile,
+            uploadFiles,
             error,
             uploadedFiles,
             isLoading,
-            fetchMessages,
+            getReports,
             fileReport,
             setFileReport,
             fileChanges,
@@ -191,6 +254,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             sendChatMessage,
             getChatDataById,
             deleteFilesHistory,
+            DeleteFileFromReport,
             setIsLoading,
             isEdited,
             setIsEdited,

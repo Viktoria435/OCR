@@ -1,13 +1,11 @@
-import { replaceReport, replaceReportChanges } from "../api/fileApi";
-import { useFileUpload } from "../context/fileContext";
+import { replaceReport } from "../../api/fileApi";
+import { useFileUpload } from "../../context/fileContext";
 
 const SaveButton = () => {
    const {
       selectedFileId,
       isEdited,
-      editingChanges,
       editingReport,
-      setFileChanges,
       setFileReport,
       setIsEdited
    } = useFileUpload();
@@ -23,18 +21,18 @@ const SaveButton = () => {
          }
       }
 
-      if (editingChanges && selectedFileId && editingChanges !== "") {
-         try {
-            const response = await replaceReportChanges(
-               selectedFileId,
-               editingChanges
-            );
-            setFileChanges(response.data.changes);
-            setIsEdited(false);
-         } catch (error) {
-            console.error("Error saving changes:", error);
-         }
-      }
+      // if (editingChanges && selectedFileId && editingChanges !== "") {
+      //    try {
+      //       const response = await replaceReportChanges(
+      //          selectedFileId,
+      //          editingChanges
+      //       );
+      //       setFileChanges(response.data.changes);
+      //       setIsEdited(false);
+      //    } catch (error) {
+      //       console.error("Error saving changes:", error);
+      //    }
+      // }
    };
 
    return (

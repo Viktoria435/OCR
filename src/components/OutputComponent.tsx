@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { useFileUpload } from "../context/fileContext";
 
-const PatientChanges = () => {
+const OutputComponent = () => {
   const { fileReport, setEditingReport, setIsEdited } = useFileUpload();
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(fileReport || "");
@@ -59,12 +59,13 @@ const PatientChanges = () => {
             className="w-full h-full resize-none focus:outline-none"
           />
         ) : fileReport ? (
-          <ReactMarkdown className="overflow-auto h-full w-full">
-            {fileReport}
-          </ReactMarkdown>
+          <div className="overflow-auto h-full w-full">
+          <ReactMarkdown>{fileReport}</ReactMarkdown>
+        </div>
+        
         ) : (
           <div className="flex justify-center items-center h-full">
-            <p className="text-black opacity-50">No changes data</p>
+            <p className="text-black opacity-50">No output data</p>
           </div>
         )}
       </div>
@@ -72,4 +73,4 @@ const PatientChanges = () => {
   );
 };
 
-export default PatientChanges;
+export default OutputComponent;

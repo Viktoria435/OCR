@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import AuthLoginForm from "../components/AuthLoginForm";
 
 const AuthLoginPage: React.FC = () => {
@@ -21,7 +21,7 @@ const AuthLoginPage: React.FC = () => {
                </p>
             </div>
             <AuthLoginForm isLogin={isLogin} />
-            <p className="text-center text-sm text-[#434343a9] mt-8">
+            {/* <p className="text-center text-sm text-[#434343a9] mt-8">
                {isLogin
                   ? "Don't have an account? "
                   : "Already have an account? "}
@@ -31,7 +31,7 @@ const AuthLoginPage: React.FC = () => {
                >
                   {isLogin ? "Sign up" : "Sign in"}
                </Link>
-            </p>
+            </p> */}
          </div>
       </div>
    );

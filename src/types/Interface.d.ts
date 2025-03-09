@@ -1,4 +1,4 @@
-export interface Message {
+export interface MessageOld {
    id: string;
    report: string;
    changes: string;
@@ -8,7 +8,31 @@ export interface Message {
    datetimeUpdated: string;
 }
 
+export interface IDocument {
+   id: string, 
+   filename: string, 
+   originalText: string,
+}
+
+export interface Message {
+   id: string;
+   report: string;
+   documents: IDocument[];
+   patientId: string;
+   filename: string;
+   datetimeInserted: string;
+   datetimeUpdated: string;
+}
+
 export interface UploadFileResponse {
+   data: MessageOld;
+   successful: boolean;
+   error?: {
+      message: string;
+   } | null;
+}
+
+export interface UploadFilesResponse {
    data: Message;
    successful: boolean;
    error?: {

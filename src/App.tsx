@@ -10,7 +10,7 @@ function App() {
          <Routes>
             <Route path="/" element={<MainPage />} />
             <Route path="/auth/login" element={<AuthLoginPage />} />
-            <Route path="/auth/register" element={<AuthLoginPage />} />
+            {/* <Route path="/auth/register" element={<AuthLoginPage />} /> */}
          </Routes>
       </FileUploadProvider>
    );

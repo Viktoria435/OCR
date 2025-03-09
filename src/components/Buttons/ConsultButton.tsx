@@ -1,6 +1,6 @@
-import { generateConsultReport } from "../api/fileApi";
-import { useFileUpload } from "../context/fileContext";
-import { base64ToBytes } from "../utils/Convertation";
+import { generateConsultReport } from "../../api/fileApi";
+import { useFileUpload } from "../../context/fileContext";
+import { base64ToBytes } from "../../utils/Convertation";
 
 const ConsultButton = () => {
    const { selectedFileId, setIsLoading } = useFileUpload();
