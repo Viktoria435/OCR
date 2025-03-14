@@ -304,7 +304,7 @@ export const generateConsultReport = async (
    }
    try {
       const response = await api.post<UploadConsultReport>(
-         `/api/consult/${reportId}/generate`,
+         `/api/consult/${reportId}/generate`, {},
          {
             headers: {
                Authorization: `Bearer ${token}`,

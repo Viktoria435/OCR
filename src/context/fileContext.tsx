@@ -113,26 +113,26 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       }
    };
 
-   const getReports = async (pageSize: number, pageIndex: number, searchValue?: string) => {
-      try {
-         const response = searchValue
-         ? await getSearchReportsRequest(pageSize, pageIndex, searchValue)
-         : await getAllReportsRequest(pageSize, pageIndex);
-         if (!response.successful) {
-            setError(response.error?.message || "Failed to load messages");
-            return;
+      const getReports = async (pageSize: number, pageIndex: number, searchValue?: string) => {
+         try {
+            const response = searchValue
+            ? await getSearchReportsRequest(pageSize, pageIndex, searchValue)
+            : await getAllReportsRequest(pageSize, pageIndex);
+            if (!response.successful) {
+               setError(response.error?.message || "Failed to load messages");
+               return;
+            }
+            
+            setUploadedFiles(response.data.data);
          }
-         
-         setUploadedFiles(response.data.data);
-      }
-       catch (err: unknown) {
-         console.error("Error fetching messages:", err);
-         setError("Failed to fetch messages");
-         setUploadedFiles([]);
-      } finally {
-         setIsLoading(false);
-      }
-   };
+         catch (err: unknown) {
+            console.error("Error fetching messages:", err);
+            setError("Failed to fetch messages");
+            setUploadedFiles([]);
+         } finally {
+            setIsLoading(false);
+         }
+      };
 
    const getChatDataById = async (chatId: string) => {
       try {
