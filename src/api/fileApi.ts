@@ -303,8 +303,8 @@ export const generateConsultReport = async (
       throw new Error("Error getting token");
    }
    try {
-      const response = await api.post<UploadConsultReport>(
-         `/api/consult/${reportId}/generate`, {},
+      const response = await api.get<UploadConsultReport>(
+         `/api/consult/${reportId}`,
          {
             headers: {
                Authorization: `Bearer ${token}`,
