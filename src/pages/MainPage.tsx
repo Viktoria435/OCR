@@ -13,12 +13,14 @@ import UploaderFileModal from "../components/Modals/UploaderFileModal";
 import SearchPatient from "../components/SearchPatient";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-
+import Scenario from "../components/Scenario";
+import ScenarioButton from "../components/Buttons/ScenarioButton";
 
 const MainPage = () => {
    const navigate = useNavigate();
-   const { isLoading, getReports } = useFileUpload();
-   const [isOpen, setIsOpen] = useState(false);
+   const { isLoading, getReports, scenario } = useFileUpload();
+   const [isOpenUploader, setIsOpenUploader] = useState(false);
+   const [isOpenScenario, setIsOpenScenario] = useState(false);
 
    useEffect(() => {
       const token = Cookies.get("accessToken");
@@ -50,7 +52,7 @@ const MainPage = () => {
             </p>
             <SearchPatient />
             <FileHistory />
-            <UploadFileButton onClick={() => setIsOpen(true)} />
+            <UploadFileButton onClick={() => setIsOpenUploader(true)} />
             {/* <DeleteHistory /> */}
          </div>
          <div className="flex flex-col p-8 gap-y-5 overflow-hidden">
@@ -61,6 +63,9 @@ const MainPage = () => {
                <div className="absolute left-0 top-1/2 transform -translate-y-1/2"></div>
                <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
                   <ConsultButton />
+               </div>
+               <div className="absolute right-32 top-1/2 transform -translate-y-1/2">
+                  <ScenarioButton handleOpen={() => setIsOpenScenario(true)} />
                </div>
                <div className="absolute right-36 top-1/2 transform -translate-y-1/2">
                   <SaveButton />
@@ -83,10 +88,19 @@ const MainPage = () => {
             <AgentUploader />
          </div>
 
-         <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+         <Modal
+            isOpen={isOpenUploader}
+            onClose={() => setIsOpenUploader(false)}
+         >
             <div className="text-center">
-               <UploaderFileModal onClose={() => setIsOpen(false)} />
+               <UploaderFileModal onClose={() => setIsOpenUploader(false)} />
             </div>
+         </Modal>
+         <Modal
+            isOpen={isOpenScenario}
+            onClose={() => setIsOpenScenario(false)}
+         >
+            <Scenario scenario={scenario} />
          </Modal>
       </div>
    );

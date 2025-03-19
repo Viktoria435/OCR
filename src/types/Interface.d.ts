@@ -20,6 +20,8 @@ export interface Message {
    documents: IDocument[];
    patientId: string;
    filename: string;
+   scenario: string;
+   consult_note: string;
    datetimeInserted: string;
    datetimeUpdated: string;
 }
@@ -97,4 +99,10 @@ export interface UploadConsultReport {
    error?: {
       message: string;
    } | null;
+}
+
+export interface DeleteReportRequest {
+   data: null, 
+   successful: boolean, 
+   error: null
 }

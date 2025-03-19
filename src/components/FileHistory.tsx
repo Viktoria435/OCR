@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useFileUpload } from "../context/fileContext";
 import AddFileToReportButton from "./Buttons/AddFileToReportButton";
 import DeleteFileFromReportButton from "./Buttons/DeleteFileFromReportButton";
+import DeleteReportButton from "./Buttons/DeleteReportButton";
 
 const FileHistory = () => {
    const { uploadedFiles, selectedFileId, setSelectedFileId, getChatDataById } =
@@ -35,11 +36,13 @@ const FileHistory = () => {
                               toggleFileExpansion(file.id);
                               handleFileClick(file.id);
                            }}
-
                         >
                            {file.filename}
                         </span>
-                        <AddFileToReportButton reportId={file.id} />
+                        <div className="flex space-x-2">
+                           <AddFileToReportButton reportId={file.id} />
+                           <DeleteReportButton reportId={file.id} />
+                        </div>
                      </div>
                      {expandedFileId === file.id &&
                         file.documents.length > 0 && (
@@ -53,8 +56,11 @@ const FileHistory = () => {
                                        <span className="flex text-md mr-2">
                                           {doc.filename}
                                        </span>
-                                      <DeleteFileFromReportButton reportId={file.id} documentId={doc.id}/>
-                                    </div> 
+                                       <DeleteFileFromReportButton
+                                          reportId={file.id}
+                                          documentId={doc.id}
+                                       />
+                                    </div>
                                  </li>
                               ))}
                            </ul>

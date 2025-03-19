@@ -38,9 +38,9 @@ const UploaderFileModal = ({ onClose,  reportId }: UploaderFileModalProps) => {
    };
 
    return (
-      <div className="flex flex-col">
-         <div className="bg-white flex rounded-md flex-col items-center p-4 gap-y-5">
-            <label className="border w-full border-gray-200 overflow-hidden text-black text-start px-2 text-lg cursor-pointer">
+      <div className="flex flex-col h-72 w-lg">
+         <div className="bg-white flex rounded-md flex-col items-center p-4 justify-between h-full">
+            <label className="border w-full border-gray-200 overflow-hidden text-black text-start px-2 text-lg cursor-pointer mb-3">
                Choose Files:
                <input
                   type="file"
@@ -50,7 +50,7 @@ const UploaderFileModal = ({ onClose,  reportId }: UploaderFileModalProps) => {
                   multiple
                />
             </label>
-            <div className="w-full text-start space-y-3 px-1">
+            <div className="w-full text-start space-y-3 px-1 flex-1 overflow-auto">
                {fileName.map((file, index) => (
                   <div key={index}>{file}</div>
                ))}
@@ -58,7 +58,7 @@ const UploaderFileModal = ({ onClose,  reportId }: UploaderFileModalProps) => {
 
             <button
                onClick={handleSubmit}
-               className="bg-blue-500 w-full p-2 text-lg text-white font-semibold hover:bg-blue-600 transition duration-500  disabled:bg-gray-500 disabled:cursor-not-allowed"
+               className="bg-blue-500 w-full p-2 mt-3 text-lg text-white font-semibold hover:bg-blue-600 transition duration-500  disabled:bg-gray-500 disabled:cursor-not-allowed"
                disabled={!selectedFiles}
             >
                Submit

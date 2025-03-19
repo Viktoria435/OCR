@@ -1,5 +1,6 @@
 import api from ".";
 import {
+   DeleteReportRequest,
    GetChatMessagesResponse,
    GetMessagesResponse,
    SendMessageRequest,
@@ -210,11 +211,38 @@ export const deleteFileFromReportRequest = async (
       return response.data;
    } catch (error: unknown) {
       if (error instanceof Error) {
-         console.error("Error sending message:", error.message);
+         console.error("Error deleting message:", error.message);
       } else {
          console.error("Unknown error:", error);
       }
       throw new Error("Failed to send message");
+   }
+};
+
+export const deleteReportRequest = async (
+   reportId: string,
+): Promise<DeleteReportRequest> => {
+   const token = Cookies.get("accessToken");
+   if (!token) {
+      throw new Error("Error getting token");
+   }
+   try {
+      const response = await api.delete<DeleteReportRequest>(
+         `/api/report/${reportId}`,
+         {
+            headers: {
+               Authorization: `Bearer ${token}`,
+            },
+         }
+      );
+      return response.data;
+   } catch (error: unknown) {
+      if (error instanceof Error) {
+         console.error("Error deleting report:", error.message);
+      } else {
+         console.error("Unknown error:", error);
+      }
+      throw new Error("Failed to delete report");
    }
 };
 

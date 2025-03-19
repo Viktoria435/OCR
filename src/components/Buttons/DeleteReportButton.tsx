@@ -1,15 +1,13 @@
 import { useFileUpload } from "../../context/fileContext";
 
-const DeleteFileFromReportButton = ({
+const DeleteReportButton = ({
    reportId,
-   documentId,
 }: {
    reportId: string;
-   documentId: string;
 }) => {
-   const { deleteFileFromReport } = useFileUpload();
+   const { deleteReport } = useFileUpload();
    const handleDelete = async () => {
-      deleteFileFromReport(reportId, documentId);
+      deleteReport(reportId);
    };
 
    return (
@@ -32,4 +30,4 @@ const DeleteFileFromReportButton = ({
    );
 };
 
-export default DeleteFileFromReportButton;
+export default DeleteReportButton;
