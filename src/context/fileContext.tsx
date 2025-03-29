@@ -11,12 +11,14 @@ import {
    deleteFileFromReportRequest,
    getSearchReportsRequest,
    deleteReportRequest,
+   sendAudioRequest,
 } from "../api/fileApi";
 
 interface FileUploadContextType {
    error: string | null;
    uploadedFiles: Message[];
    isLoading: boolean;
+   isMessageLoading: boolean;
    fileReport: string | null;
    scenario: string | null;
    //fileChanges: string | null;
@@ -26,6 +28,7 @@ interface FileUploadContextType {
    getChatDataById: (chatId: string) => void;
    getAllMessages: (chatId: string) => void;
    sendChatMessage: (chatId: string, text: string) => void;
+   sendAudioChatMessage: (chatId: string, file: Blob) => void;
    uploadFiles: (files: File[], reportId?: string) => void;
    deleteFileFromReport: (reportId: string, documentId: string) => void;
    deleteReport: (reportId: string) => void;
@@ -54,6 +57,7 @@ const FileUploadContext = createContext<FileUploadContextType | undefined>(
 export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    const [error, setError] = useState<string | null>(null);
    const [isLoading, setIsLoading] = useState<boolean>(false);
+   const [isMessageLoading, setIsMessageLoading] = useState<boolean>(false);
    const [uploadedFiles, setUploadedFiles] = useState<Message[]>([]);
    const [chatData, setChatData] = useState<Chat[]>([]);
    const [isEdited, setIsEdited] = useState<boolean>(false);
@@ -146,6 +150,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const getChatDataById = async (chatId: string) => {
       try {
+         setIsLoading(true);
          const response = await getReportByIdRequest(chatId);
          if (!response.successful) {
             setError(response.error?.message || "Failed to load messages");
@@ -182,6 +187,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const sendChatMessage = async (chatId: string, text: string) => {
       try {
+         setIsMessageLoading(true);
          setChatData((prevChatData) => [
             ...prevChatData,
             {
@@ -195,7 +201,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          ]);
          const response = await sendMessageRequest(chatId, text);
          if (!response.successful) {
-            setError(response.error?.message || "Failed to load messages");
+            setError(response.error?.message || "Failed to load messages");  
+            
             return;
          }
          setChatData((prevChatData) => [...prevChatData, response.data]);
@@ -204,7 +211,39 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
          setError("Failed to fetch messages");
       } finally {
-         setIsLoading(false);
+         setIsMessageLoading(false);
+      }
+   };
+
+
+   const sendAudioChatMessage = async (chatId: string, file: Blob) => {
+      try {
+         setIsMessageLoading(true);
+         const response = await sendAudioRequest(file, chatId);
+         if (!response.successful) {
+            setError(response.error?.message || "Failed to load messages");
+            return;
+         }
+
+         const transcription = response.data.transcription || "Audio";
+         setChatData((prevChatData) => [
+            ...prevChatData,
+            {
+               id: `temp-${Date.now()}`,
+               reportId: chatId,
+               author: "user",
+               text: transcription,
+               datetimeInserted: new Date().toISOString(),
+               datetimeUpdated: new Date().toISOString(),
+            },
+         ]);
+         setChatData((prevChatData) => [...prevChatData, response.data]);
+      } catch (err: unknown) {
+         console.error("Error fetching messages:", err);
+
+         setError("Failed to fetch messages");
+      } finally {
+         setIsMessageLoading(false);
       }
    };
 
@@ -286,6 +325,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             error,
             uploadedFiles,
             isLoading,
+            isMessageLoading,
             getReports,
             fileReport,
             setFileReport,
@@ -298,6 +338,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             getAllMessages,
             chatData,
             sendChatMessage,
+            sendAudioChatMessage,
             getChatDataById,
             deleteFilesHistory,
             deleteFileFromReport,

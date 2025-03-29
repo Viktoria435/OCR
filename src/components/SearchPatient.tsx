@@ -7,9 +7,9 @@ const SearchPatient = () => {
    const [searchValue, setSearchValue] = useState<string>("");
 
    useEffect(() => {
-      getReports(100, 0, searchValue);
+      getReports(100, 0);
    // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [searchValue]);
+   }, []);
 
    return (
       <div className="flex justify-between items-center bg-white p-2 rounded-md text-start">
@@ -17,10 +17,18 @@ const SearchPatient = () => {
             <input
                value={searchValue}
                onChange={(e) => setSearchValue(e.target.value)}
+               onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                     getReports(100, 0, searchValue);
+                  }
+               }}
                className="w-full outline-0  pb-1 px-1"
             />
             {searchValue && (
-               <button onClick={() => setSearchValue("")}>
+               <button onClick={() => {
+                  setSearchValue("");
+                  getReports(100, 0);
+               }}>
                   <svg
                      xmlns="http://www.w3.org/2000/svg"
                      fill="none"
@@ -38,7 +46,7 @@ const SearchPatient = () => {
                </button>
             )}
          </div>
-         <button>
+         <button onClick={() => getReports(100, 0, searchValue)}>
             <svg
                xmlns="http://www.w3.org/2000/svg"
                fill="none"

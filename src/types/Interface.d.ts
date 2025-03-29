@@ -62,6 +62,7 @@ export interface Chat {
    reportId: string;
    author: string;
    text: string;
+   transcription?: string;
    datetimeInserted: string;
    datetimeUpdated: string;
 }

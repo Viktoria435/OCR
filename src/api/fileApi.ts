@@ -302,6 +302,38 @@ export const sendMessageRequest = async (
    }
 };
 
+
+export const sendAudioRequest = async (
+   file: Blob,
+   reportId: string
+): Promise<SendMessageResponse> => {
+   const formData = new FormData();
+   formData.append('file', file, 'audio.webm');
+
+   const token = Cookies.get("accessToken");
+   if (!token) {
+      throw new Error("Error getting token");
+   }
+
+   try {
+      const response = await api.post<SendMessageResponse>(
+         `/api/message/voice/${reportId}`,
+         formData,
+         {
+            headers: {
+               "Content-Type": "multipart/form-data",
+               Authorization: `Bearer ${token}`,
+            },
+         }
+      );
+
+      return response.data;
+   } catch (error: unknown) {
+      console.error("Error uploading file:", error);
+      throw new Error("File upload failed");
+   }
+};
+
 export const deleteFilesHistoryRequest = async (): Promise<unknown> => {
    const token = Cookies.get("accessToken");
    if (!token) {

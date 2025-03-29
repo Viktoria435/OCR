@@ -3,25 +3,22 @@ import { useFileUpload } from "../../context/fileContext";
 
 interface UploaderFileModalProps {
    onClose: () => void;
-   reportId?: string
+   reportId?: string;
 }
 
-const UploaderFileModal = ({ onClose,  reportId }: UploaderFileModalProps) => {
-   const [selectedFiles, setSelectedFiles] = useState<File[] | null>(null);
-   const [fileName, setFileName] = useState<string[]>([]);
+const UploaderFileModal = ({ onClose, reportId }: UploaderFileModalProps) => {
+   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
    const { uploadFiles } = useFileUpload();
 
    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files.length > 0) {
          const filesArray = Array.from(event.target.files);
-         setSelectedFiles((prevFiles) =>
-            prevFiles ? [...prevFiles, ...filesArray] : filesArray
-         );
-         setFileName((prevFileName) => [
-            ...prevFileName,
-            ...filesArray.map((file) => file.name),
-         ]);
+         setSelectedFiles((prevFiles) => [...prevFiles, ...filesArray]);
       }
+   };
+
+   const handleRemoveFile = (index: number) => {
+      setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
    };
 
    useEffect(() => {
@@ -29,12 +26,11 @@ const UploaderFileModal = ({ onClose,  reportId }: UploaderFileModalProps) => {
    }, [selectedFiles]);
 
    const handleSubmit = () => {
-      if (selectedFiles) {
+      if (selectedFiles.length > 0) {
          uploadFiles(selectedFiles, reportId);
-         setSelectedFiles(null);
-         setFileName(["Sended"]);
+         setSelectedFiles([]);
          onClose();
-      };
+      }
    };
 
    return (
@@ -51,15 +47,39 @@ const UploaderFileModal = ({ onClose,  reportId }: UploaderFileModalProps) => {
                />
             </label>
             <div className="w-full text-start space-y-3 px-1 flex-1 overflow-auto">
-               {fileName.map((file, index) => (
-                  <div key={index}>{file}</div>
+               {selectedFiles.map((file, index) => (
+                  <div
+                     key={index}
+                     className="flex justify-between items-center"
+                  >
+                     <span>{file.name}</span>
+                     <button
+                        onClick={() => handleRemoveFile(index)}
+                        className="ml-2 hover:text-red-500"
+                     >
+                        <svg
+                           xmlns="http://www.w3.org/2000/svg"
+                           fill="none"
+                           viewBox="0 0 24 24"
+                           strokeWidth={1.5}
+                           stroke="currentColor"
+                           className="size-6"
+                        >
+                           <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 18 18 6M6 6l12 12"
+                           />
+                        </svg>
+                     </button>
+                  </div>
                ))}
             </div>
 
             <button
                onClick={handleSubmit}
-               className="bg-blue-500 w-full p-2 mt-3 text-lg text-white font-semibold hover:bg-blue-600 transition duration-500  disabled:bg-gray-500 disabled:cursor-not-allowed"
-               disabled={!selectedFiles}
+               className="bg-blue-500 w-full p-2 mt-3 text-lg text-white font-semibold hover:bg-blue-600 transition duration-500 disabled:bg-gray-500 disabled:cursor-not-allowed rounded-md"
+               disabled={selectedFiles.length === 0}
             >
                Submit
             </button>

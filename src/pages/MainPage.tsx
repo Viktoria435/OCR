@@ -30,10 +30,6 @@ const MainPage = () => {
       }
    }, [navigate, getReports]);
 
-   useEffect(() => {
-      getReports(100, 0);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, []);
 
    return (
       <div className="grid grid-cols-[1fr_2fr_1fr] w-full h-screen overflow-hidden divide-x-2 divide-gray-500">
