@@ -262,7 +262,7 @@ export const sendAudioRequest = async (
    reportId: string
 ): Promise<SendMessageResponse> => {
    const formData = new FormData();
-   formData.append("file", file, "audio.webm");
+   formData.append("file", file, "audio.mp4");
 
    const token = checkToken();
 

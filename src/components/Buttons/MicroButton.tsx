@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
 import { useFileUpload } from "../../context/fileContext";
-//import { convertWebMToMp3 } from "../../utils/Convertation";
 
 const MicroButton = () => {
    const { selectedFileId, sendAudioChatMessage } = useFileUpload();
@@ -34,7 +33,7 @@ const MicroButton = () => {
       if (!streamRef.current) return;
 
       const mediaRecorder = new MediaRecorder(streamRef.current, {
-         mimeType: "audio/webm",
+         mimeType: "audio/mp4",
       });
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
@@ -47,7 +46,7 @@ const MicroButton = () => {
 
       mediaRecorder.onstop = async () => {
          const audioBlob = new Blob(audioChunksRef.current, {
-            type: "audio/webm",
+            type: "audio/mp4",
          });
 
          if (selectedFileId) {
