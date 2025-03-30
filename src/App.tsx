@@ -1,10 +1,12 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import "./App.css";
 import { FileUploadProvider } from "./context/fileContext";
 import AuthLoginPage from "./pages/AuthLoginPage";
 import MainPage from "./pages/MainPage";
-
+import { setNavigator } from "./services/navigatorService";
 function App() {
+   const navigate = useNavigate();
+   setNavigator(navigate);
    return (
       <FileUploadProvider>
          <Routes>

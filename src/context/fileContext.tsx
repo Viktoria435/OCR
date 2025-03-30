@@ -109,6 +109,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             // setFileChanges(response.data.changes);
             setSelectedFileId(response.data.id);
             setIsEdited(false);
+            setScenario(response.data.scenario);
             getAllMessages(response.data.id);
             getReports(100, 0);
          }
@@ -201,8 +202,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          ]);
          const response = await sendMessageRequest(chatId, text);
          if (!response.successful) {
-            setError(response.error?.message || "Failed to load messages");  
-            
+            setError(response.error?.message || "Failed to load messages");
+
             return;
          }
          setChatData((prevChatData) => [...prevChatData, response.data]);
@@ -214,7 +215,6 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setIsMessageLoading(false);
       }
    };
-
 
    const sendAudioChatMessage = async (chatId: string, file: Blob) => {
       try {
@@ -301,7 +301,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             getReports(100, 0);
             if (reportId === selectedFileId) {
                setFileReport(null);
-               setScenario(null)
+               setScenario(null);
                setSelectedFileId(null);
                setChatData([]);
             }

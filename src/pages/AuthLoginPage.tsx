@@ -9,7 +9,7 @@ const AuthLoginPage: React.FC = () => {
 
    return (
       <div className="h-screen flex flex-col justify-center items-center">
-         <div className="w-full max-w-md p-6">
+         <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
             <div className="flex flex-col items-center justify-center gap-2 text-center">
                <h3 className="text-xl text-[#434343] font-bold">
                   {isLogin ? "Sign In" : "Sign Up"}

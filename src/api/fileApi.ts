@@ -9,7 +9,7 @@ import {
    UploadFileResponse,
    UploadFilesResponse,
 } from "../types/Interface";
-import Cookies from "js-cookie";
+import { checkToken, handleApiError } from "../utils/ApiUtils";
 
 // export const uploadFileRequest = async (
 //    file: File
@@ -42,11 +42,7 @@ export const uploadFilesRequest = async (
    files.forEach((file) => {
       formData.append("files", file);
    });
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
-
+   const token = checkToken();
    try {
       const response = await api.post<UploadFilesResponse>(
          "/api/report",
@@ -61,8 +57,8 @@ export const uploadFilesRequest = async (
 
       return response.data;
    } catch (error: unknown) {
-      console.error("Error uploading file:", error);
-      throw new Error("File upload failed");
+      handleApiError(error);
+      throw new Error("Failed to upload files to report");
    }
 };
 
@@ -74,11 +70,7 @@ export const uploadFilesToReportRequest = async (
    files.forEach((file) => {
       formData.append("files", file);
    });
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
-
+   const token = checkToken();
    try {
       const response = await api.post<UploadFilesResponse>(
          `/api/report/${reportId}/documents/add`,
@@ -93,8 +85,8 @@ export const uploadFilesToReportRequest = async (
 
       return response.data;
    } catch (error: unknown) {
-      console.error("Error uploading file:", error);
-      throw new Error("File upload failed");
+      handleApiError(error);
+      throw new Error("Failed to upload files to report");
    }
 };
 
@@ -118,10 +110,7 @@ export const getAllReportsRequest = async (
    pageSize: number,
    pageIndex: number
 ): Promise<GetMessagesResponse> => {
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
+   const token = checkToken();
    try {
       const response = await api.get<GetMessagesResponse>("/api/report/all", {
          params: { pageSize, pageIndex },
@@ -132,8 +121,8 @@ export const getAllReportsRequest = async (
 
       return response.data;
    } catch (error: unknown) {
-      console.error("Error fetching messages:", error);
-      throw new Error("Failed to fetch messages");
+      handleApiError(error);
+      throw new Error("Failed to get all reports");
    }
 };
 
@@ -142,10 +131,7 @@ export const getSearchReportsRequest = async (
    pageIndex: number,
    searchValue: string
 ): Promise<GetMessagesResponse> => {
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
+   const token = checkToken();
    try {
       const response = await api.get<GetMessagesResponse>(
          `/api/report/${searchValue}/search`,
@@ -159,18 +145,15 @@ export const getSearchReportsRequest = async (
 
       return response.data;
    } catch (error: unknown) {
-      console.error("Error fetching messages:", error);
-      throw new Error("Failed to fetch messages");
+      handleApiError(error);
+      throw new Error("Failed to get search reports");
    }
 };
 
 export const getReportByIdRequest = async (
    reportId: string
 ): Promise<UploadFilesResponse> => {
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
+   const token = checkToken();
    try {
       const response = await api.get<UploadFilesResponse>(
          `/api/report/${reportId}`,
@@ -182,12 +165,8 @@ export const getReportByIdRequest = async (
       );
       return response.data;
    } catch (error: unknown) {
-      if (error instanceof Error) {
-         console.error("Error sending message:", error.message);
-      } else {
-         console.error("Unknown error:", error);
-      }
-      throw new Error("Failed to send message");
+      handleApiError(error);
+      throw new Error("Failed to get report by id");
    }
 };
 
@@ -195,10 +174,7 @@ export const deleteFileFromReportRequest = async (
    reportId: string,
    documentId: string
 ): Promise<UploadFilesResponse> => {
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
+   const token = checkToken();
    try {
       const response = await api.delete<UploadFilesResponse>(
          `/api/report/${reportId}/${documentId}/delete`,
@@ -210,22 +186,15 @@ export const deleteFileFromReportRequest = async (
       );
       return response.data;
    } catch (error: unknown) {
-      if (error instanceof Error) {
-         console.error("Error deleting message:", error.message);
-      } else {
-         console.error("Unknown error:", error);
-      }
-      throw new Error("Failed to send message");
+      handleApiError(error);
+      throw new Error("Failed to delete file from report");
    }
 };
 
 export const deleteReportRequest = async (
-   reportId: string,
+   reportId: string
 ): Promise<DeleteReportRequest> => {
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
+   const token = checkToken();
    try {
       const response = await api.delete<DeleteReportRequest>(
          `/api/report/${reportId}`,
@@ -237,11 +206,7 @@ export const deleteReportRequest = async (
       );
       return response.data;
    } catch (error: unknown) {
-      if (error instanceof Error) {
-         console.error("Error deleting report:", error.message);
-      } else {
-         console.error("Unknown error:", error);
-      }
+      handleApiError(error);
       throw new Error("Failed to delete report");
    }
 };
@@ -249,10 +214,7 @@ export const deleteReportRequest = async (
 export const getChatMessagesRequest = async (
    reportId: string
 ): Promise<GetChatMessagesResponse> => {
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
+   const token = checkToken();
    try {
       const response = await api.get<GetChatMessagesResponse>(
          `/api/message/${reportId}/all`,
@@ -264,8 +226,8 @@ export const getChatMessagesRequest = async (
       );
       return response.data;
    } catch (error: unknown) {
-      console.error("Error fetching messages:", error);
-      throw new Error("Failed to fetch messages");
+      handleApiError(error);
+      throw new Error("Failed to get chat messages");
    }
 };
 
@@ -273,10 +235,7 @@ export const sendMessageRequest = async (
    reportId: string,
    userMessage: string
 ): Promise<SendMessageResponse> => {
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
+   const token = checkToken();
    const requestData: SendMessageRequest = {
       text: userMessage,
    };
@@ -293,27 +252,19 @@ export const sendMessageRequest = async (
       );
       return response.data;
    } catch (error: unknown) {
-      if (error instanceof Error) {
-         console.error("Error sending message:", error.message);
-      } else {
-         console.error("Unknown error:", error);
-      }
+      handleApiError(error);
       throw new Error("Failed to send message");
    }
 };
-
 
 export const sendAudioRequest = async (
    file: Blob,
    reportId: string
 ): Promise<SendMessageResponse> => {
    const formData = new FormData();
-   formData.append('file', file, 'audio.webm');
+   formData.append("file", file, "audio.webm");
 
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
+   const token = checkToken();
 
    try {
       const response = await api.post<SendMessageResponse>(
@@ -329,16 +280,14 @@ export const sendAudioRequest = async (
 
       return response.data;
    } catch (error: unknown) {
-      console.error("Error uploading file:", error);
-      throw new Error("File upload failed");
+      handleApiError(error);
+      throw new Error("Failed to send audio");
    }
 };
 
 export const deleteFilesHistoryRequest = async (): Promise<unknown> => {
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
+   const token = checkToken();
+
    try {
       const response = await api.delete("/api/report/all", {
          headers: {
@@ -351,17 +300,16 @@ export const deleteFilesHistoryRequest = async (): Promise<unknown> => {
          throw new Error(response.data.error.message);
       }
    } catch (error: unknown) {
-      console.error("Error deleting all messages:", error);
+      handleApiError(error);
+      throw new Error("Failed to delete all messages");
    }
 };
 
 export const generateConsultReport = async (
    reportId: string
 ): Promise<UploadConsultReport> => {
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
+   const token = checkToken();
+
    try {
       const response = await api.get<UploadConsultReport>(
          `/api/consult/${reportId}`,
@@ -373,8 +321,8 @@ export const generateConsultReport = async (
       );
       return response.data;
    } catch (error: unknown) {
-      console.error("Error fetching messages:", error);
-      throw new Error("Failed to fetch messages");
+      handleApiError(error);
+      throw new Error("Failed to generate consult report");
    }
 };
 
@@ -382,10 +330,8 @@ export const replaceReport = async (
    reportId: string,
    text: string
 ): Promise<UploadFileResponse> => {
-   const token = Cookies.get("accessToken");
-   if (!token) {
-      throw new Error("Error getting token");
-   }
+   const token = checkToken();
+
    try {
       const response = await api.patch<UploadFileResponse>(
          `/api/report/${reportId}/report`,
@@ -398,8 +344,8 @@ export const replaceReport = async (
       );
       return response.data;
    } catch (error: unknown) {
-      console.error("Error fetching messages:", error);
-      throw new Error("Failed to fetch messages");
+      handleApiError(error);
+      throw new Error("Failed to replace report");
    }
 };
 
