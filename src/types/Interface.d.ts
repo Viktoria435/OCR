@@ -9,9 +9,9 @@ export interface MessageOld {
 }
 
 export interface IDocument {
-   id: string, 
-   filename: string, 
-   originalText: string,
+   id: string;
+   filename: string;
+   vsId: string;
 }
 
 export interface Message {
@@ -19,6 +19,7 @@ export interface Message {
    report: string;
    documents: IDocument[];
    patientId: string;
+   vsId: string;
    filename: string;
    scenario: string;
    consult_note: string;
@@ -103,7 +104,7 @@ export interface UploadConsultReport {
 }
 
 export interface DeleteReportRequest {
-   data: null, 
-   successful: boolean, 
-   error: null
+   data: null;
+   successful: boolean;
+   error: null;
 }
