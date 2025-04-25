@@ -7,19 +7,20 @@ import { useFileUpload } from "../context/fileContext";
 import AgentUploader from "../components/AgentUploader";
 import ConsultButton from "../components/Buttons/ConsultButton";
 import SaveButton from "../components/Buttons/SaveButton";
-import UploadFileButton from "../components/Buttons/UploadFileButton";
 import Modal from "../components/Modals/Modal";
-import UploaderFileModal from "../components/Modals/UploaderFileModal";
+// import UploaderFileModal from "../components/Modals/UploaderFileModal";
 import SearchPatient from "../components/SearchPatient";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Scenario from "../components/Scenario";
 import ScenarioButton from "../components/Buttons/ScenarioButton";
+import UserProfile from "../components/UserProfile";
+import FileProgress from "../components/FileProgress";
 
 const MainPage = () => {
    const navigate = useNavigate();
    const { isLoading, getReports, scenario } = useFileUpload();
-   const [isOpenUploader, setIsOpenUploader] = useState(false);
+   //const [isOpenUploader, setIsOpenUploader] = useState(false);
    const [isOpenScenario, setIsOpenScenario] = useState(false);
 
    useEffect(() => {
@@ -30,7 +31,6 @@ const MainPage = () => {
       }
    }, [navigate, getReports]);
 
-
    return (
       <div className="grid grid-cols-[1fr_2fr_1fr] w-full h-screen overflow-hidden divide-x-2 divide-gray-500">
          {isLoading && (
@@ -38,17 +38,19 @@ const MainPage = () => {
                <Loading />
             </div>
          )}
-         <div className="flex flex-col p-8 gap-y-5 overflow-hidden flex-grow">
+         <div className="flex flex-col p-8 overflow-hidden flex-grow justify-between bg-white">
             {/* <p className="text-[#434343] font-bold text-xl underline">
                Query & Upload
             </p>
             <FileUploader /> */}
-            <p className="text-[#434343] font-bold text-xl underline">
-               Patients
-            </p>
-            <SearchPatient />
-            <FileHistory />
-            <UploadFileButton onClick={() => setIsOpenUploader(true)} />
+            <div>
+               <SearchPatient />
+               <FileHistory />
+            </div>
+            <FileProgress />
+
+            <UserProfile />
+            {/* <UploadFileButton onClick={() => setIsOpenUploader(true)} /> */}
             {/* <DeleteHistory /> */}
          </div>
          <div className="flex flex-col p-8 gap-y-5 overflow-hidden">
@@ -78,20 +80,21 @@ const MainPage = () => {
             </div> */}
          </div>
 
-         <div className="flex flex-col p-8 gap-y-5 overflow-hidden flex-grow">
-            <p className="text-[#434343] font-bold text-xl underline">Agent</p>
-            <AgentData />
-            <AgentUploader />
+         <div className="flex flex-col p-4 gap-y-5 overflow-hidden grow bg-white ">
+
+               <AgentData />
+               <AgentUploader />
+
          </div>
 
-         <Modal
+         {/* <Modal
             isOpen={isOpenUploader}
             onClose={() => setIsOpenUploader(false)}
          >
             <div className="text-center">
                <UploaderFileModal onClose={() => setIsOpenUploader(false)} />
             </div>
-         </Modal>
+         </Modal> */}
          <Modal
             isOpen={isOpenScenario}
             onClose={() => setIsOpenScenario(false)}

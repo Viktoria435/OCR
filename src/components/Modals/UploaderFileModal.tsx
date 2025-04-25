@@ -3,10 +3,11 @@ import { useFileUpload } from "../../context/fileContext";
 
 interface UploaderFileModalProps {
    onClose: () => void;
+   setFiles: (files: File[]) => void;
    reportId?: string;
 }
 
-const UploaderFileModal = ({ onClose, reportId }: UploaderFileModalProps) => {
+const UploaderFileModal = ({ onClose, reportId, setFiles }: UploaderFileModalProps) => {
    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
    const { uploadFiles } = useFileUpload();
 
@@ -28,6 +29,7 @@ const UploaderFileModal = ({ onClose, reportId }: UploaderFileModalProps) => {
    const handleSubmit = () => {
       if (selectedFiles.length > 0) {
          uploadFiles(selectedFiles, reportId);
+         setFiles(selectedFiles);
          setSelectedFiles([]);
          onClose();
       }

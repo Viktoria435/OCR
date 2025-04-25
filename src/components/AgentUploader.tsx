@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useFileUpload } from "../context/fileContext";
-import MicroButton from "./Buttons/MicroButton";
 
 const AgentUploader = () => {
    const { selectedFileId, sendChatMessage } = useFileUpload();
@@ -18,7 +17,7 @@ const AgentUploader = () => {
    };
 
    return (
-      <div className="flex flex-col">
+      <div className="flex flex-col border-2 border-gray-300 rounded-md">
          <div className="bg-white flex rounded-md flex-col items-center p-4 gap-y-5">
             <input
                value={textInput}
@@ -27,7 +26,7 @@ const AgentUploader = () => {
                      handleSubmit();
                   }
                }}
-               className="border w-full border-gray-200 overflow-hidden focus:outline-none text-black text-start p-1"
+               className="border w-full border-gray-200  overflow-hidden focus:outline-none text-black text-start p-1"
             />
             <div className="flex gap-x-2 w-full">
                <button
@@ -38,7 +37,6 @@ const AgentUploader = () => {
                >
                   Send
                </button>
-               <MicroButton />
             </div>
          </div>
       </div>

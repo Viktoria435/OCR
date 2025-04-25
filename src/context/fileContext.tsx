@@ -1,4 +1,10 @@
-import { createContext, useContext, ReactNode, useState } from "react";
+import {
+   createContext,
+   useContext,
+   ReactNode,
+   useState,
+   useEffect,
+} from "react";
 import { Chat, Message } from "../types/Interface";
 import {
    getChatMessagesRequest,
@@ -18,13 +24,16 @@ interface FileUploadContextType {
    error: string | null;
    uploadedFiles: Message[];
    isLoading: boolean;
+   isFilesUpload: boolean;
    isMessageLoading: boolean;
    fileReport: string | null;
    scenario: string | null;
    //fileChanges: string | null;
    selectedFileId: string | null;
+   selectedFiles: File[];
+   setSelectedFiles: (files: File[]) => void;
    chatData: Chat[];
-   setSelectedFileId: (text: string) => void;
+   setSelectedFileId: (text: string | null) => void;
    getChatDataById: (chatId: string) => void;
    getAllMessages: (chatId: string) => void;
    sendChatMessage: (chatId: string, text: string) => void;
@@ -67,6 +76,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
    const [editingReport, setEditingReport] = useState<string | null>(null);
    const [editingChanges, setEditingChanges] = useState<string | null>(null);
+   const [isFilesUpload, setIsFilesUpload] = useState<boolean>(false);
+   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
    // const uploadFile = async (file: File) => {
    //    setIsLoading(true);
@@ -95,8 +106,16 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    //    }
    // };
 
+   useEffect(() => {
+      if (selectedFileId === null) {
+         setFileReport(null);
+         setScenario(null);
+         setChatData([]);
+      }
+   }, [selectedFileId]);
+
    const uploadFiles = async (files: File[], reportId?: string) => {
-      setIsLoading(true);
+      setIsFilesUpload(false);
       try {
          const response = reportId
             ? await uploadFilesToReportRequest(files, reportId)
@@ -122,6 +141,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setError("File upload failed");
       } finally {
          setIsLoading(false);
+         setIsFilesUpload(true);
       }
    };
 
@@ -325,10 +345,13 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             error,
             uploadedFiles,
             isLoading,
+            isFilesUpload,
             isMessageLoading,
             getReports,
             fileReport,
             setFileReport,
+            selectedFiles,
+            setSelectedFiles,
             // fileChanges,
             // setFileChanges,
             scenario,

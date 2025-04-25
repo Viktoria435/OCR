@@ -7,11 +7,25 @@ export interface MessageOld {
    datetimeInserted: string;
    datetimeUpdated: string;
 }
-
 export interface IDocument {
    id: string;
    filename: string;
    vsId: string;
+}
+
+export interface IConsult {
+   id: string;
+   datetimeInserted: string;
+}
+
+export interface IPatient {
+   id: string;
+   name: string;
+   impression: string;
+   date_of_birth: string;
+   medical_card: string;
+   userId: string;
+   datetimeInserted: string;
 }
 
 export interface Message {
@@ -25,6 +39,7 @@ export interface Message {
    consult_note: string;
    datetimeInserted: string;
    datetimeUpdated: string;
+   patient: IPatient;
 }
 
 export interface UploadFileResponse {
@@ -34,6 +49,7 @@ export interface UploadFileResponse {
       message: string;
    } | null;
 }
+
 
 export interface UploadFilesResponse {
    data: Message;

@@ -7,12 +7,14 @@ const SearchPatient = () => {
    const [searchValue, setSearchValue] = useState<string>("");
 
    useEffect(() => {
-      getReports(100, 0);
-   // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, []);
+      if (!searchValue) {
+         getReports(100, 0);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [searchValue]);
 
    return (
-      <div className="flex justify-between items-center bg-white p-2 rounded-md text-start">
+      <div className="flex justify-between border-2  border-gray-300  items-center bg-white p-2 rounded-t-md text-start ">
          <div className="w-full border-b-2 border-gray-500 flex">
             <input
                value={searchValue}
@@ -25,10 +27,11 @@ const SearchPatient = () => {
                className="w-full outline-0  pb-1 px-1"
             />
             {searchValue && (
-               <button onClick={() => {
-                  setSearchValue("");
-                  getReports(100, 0);
-               }}>
+               <button
+                  onClick={() => {
+                     setSearchValue("");
+                  }}
+               >
                   <svg
                      xmlns="http://www.w3.org/2000/svg"
                      fill="none"
