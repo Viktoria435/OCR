@@ -343,8 +343,9 @@ export const generateConsultReport = async (
    const token = checkToken();
 
    try {
-      const response = await api.get<UploadConsultReport>(
-         `/api/consult/${reportId}`,
+      const response = await api.post<UploadConsultReport>(
+         `/api/report/${reportId}/consult`,
+         { reportId },
          {
             headers: {
                Authorization: `Bearer ${token}`,

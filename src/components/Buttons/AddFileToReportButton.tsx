@@ -1,8 +1,11 @@
 import { useState } from "react";
 import Modal from "../Modals/Modal";
 import UploaderFileModal from "../Modals/UploaderFileModal";
+import { useFileUpload } from "../../context/fileContext";
 
 const AddFileToReportButton = ({ reportId }: { reportId: string }) => {
+   const { setSelectedFiles } = useFileUpload();
+
    const [isOpen, setIsOpen] = useState(false);
 
    return (
@@ -26,6 +29,7 @@ const AddFileToReportButton = ({ reportId }: { reportId: string }) => {
          <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
             <div className="text-center">
                <UploaderFileModal
+                  setFiles={(files) => setSelectedFiles(files)}
                   onClose={() => setIsOpen(false)}
                   reportId={reportId}
                />
