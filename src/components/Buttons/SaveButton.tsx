@@ -1,20 +1,27 @@
-import { replaceReport } from "../../api/fileApi";
+import {  updateDocument } from "../../api/fileApi";
 import { useFileUpload } from "../../context/fileContext";
 
 const SaveButton = () => {
    const {
       selectedFileId,
+      selectedDocumentId,
+      // selectedConsultId,
+      setDocumentText,
       isEdited,
-      editingReport,
-      setFileReport,
+      editingUploadedText,
       setIsEdited
    } = useFileUpload();
 
    const handleSave = async () => {
-      if (editingReport && selectedFileId && editingReport !== "") {
+      if (editingUploadedText && selectedFileId && selectedDocumentId && editingUploadedText !== "") {
          try {
-            const response = await replaceReport(selectedFileId, editingReport);
-            setFileReport(response.data.report);
+            const response = await updateDocument({
+               documentId: selectedDocumentId,
+               reportId: selectedFileId,
+               text: editingUploadedText
+             }
+             );
+             setDocumentText(response.data.content);
             setIsEdited(false);
          } catch (error) {
             console.error("Error saving report:", error);

@@ -5,7 +5,8 @@ import {
    useState,
    useEffect,
 } from "react";
-import { Chat, Message } from "../types/Interface";
+import { createContext, useContext, ReactNode, useState } from "react";
+import { Chat, IConsult, IDocument, Message } from "../types/Interface";
 import {
    getChatMessagesRequest,
    getAllReportsRequest,
@@ -18,15 +19,22 @@ import {
    getSearchReportsRequest,
    deleteReportRequest,
    sendAudioRequest,
+   getDocumentDetailsById,
+   deleteConsultFromReportRequest,
+   getConsultDetailsById,
 } from "../api/fileApi";
 
 interface FileUploadContextType {
    error: string | null;
    uploadedFiles: Message[];
+   uploadedDocuments: IDocument[];
+   consultNotes: IConsult[];
    isLoading: boolean;
    isFilesUpload: boolean;
    isMessageLoading: boolean;
    fileReport: string | null;
+   documentText: string | null;
+   consultText: string | null;
    scenario: string | null;
    //fileChanges: string | null;
    selectedFileId: string | null;
@@ -34,13 +42,26 @@ interface FileUploadContextType {
    setSelectedFiles: (files: File[]) => void;
    chatData: Chat[];
    setSelectedFileId: (text: string | null) => void;
+   selectedDocumentId: string | null;
+   selectedConsultId: string | null;
+   setSelectedDocumentId: (docId: string) => void;
+   setSelectedConsultId: (consId: string) => void;
+   setDocumentText: (text: string) => void;
+   setConsultText: (text: string) => void;
    getChatDataById: (chatId: string) => void;
    getAllMessages: (chatId: string) => void;
    sendChatMessage: (chatId: string, text: string) => void;
    sendAudioChatMessage: (chatId: string, file: Blob) => void;
    uploadFiles: (files: File[], reportId?: string) => void;
-   deleteFileFromReport: (reportId: string, documentId: string) => void;
+   deleteFileFromReport: (
+      reportId: string,
+      documentId: string,
+      vsFileId: string
+   ) => void;
+   deleteConsultFromReport: (reportId: string, consultId: string) => void;
    deleteReport: (reportId: string) => void;
+   getDocumentById: (documentId: string) => void;
+   getConsultById: (consultId: string) => void;
    getReports: (
       pageSize: number,
       pageIndex: number,
@@ -53,8 +74,8 @@ interface FileUploadContextType {
    setIsLoading: (isLoading: boolean) => void;
    isEdited: boolean;
    setIsEdited: (isEdited: boolean) => void;
-   editingReport: string | null;
-   setEditingReport: (text: string) => void;
+   editingUploadedText: string | null;
+   setEditingUploadedText: (text: string) => void;
    editingChanges: string | null;
    setEditingChanges: (text: string) => void;
 }
@@ -74,10 +95,19 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    const [scenario, setScenario] = useState<string | null>(null);
    //const [fileChanges, setFileChanges] = useState<string | null>(null);
    const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
-   const [editingReport, setEditingReport] = useState<string | null>(null);
    const [editingChanges, setEditingChanges] = useState<string | null>(null);
    const [isFilesUpload, setIsFilesUpload] = useState<boolean>(false);
    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+   const [editingUploadedText, setEditingUploadedText] = useState<
+   string | null
+>(null);
+   const [uploadedDocuments, setUploadedDocuments] = useState<IDocument[]>([]);
+   const [consultNotes, setConsultNotes] = useState<IConsult[]>([]);
+   const [documentText, setDocumentText] = useState<string | null>(null);
+   const [consultText, setConsultText] = useState<string | null>(null);
+   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
+   const [selectedConsultId, setSelectedConsultId] = useState<string | null>(null);
 
    // const uploadFile = async (file: File) => {
    //    setIsLoading(true);
@@ -160,6 +190,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          }
 
          setUploadedFiles(response.data.data);
+         console.log(response.data.data);
       } catch (err: unknown) {
          console.error("Error fetching messages:", err);
          setError("Failed to fetch messages");
@@ -179,9 +210,20 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          }
          setFileReport(response.data.report);
          setScenario(response.data.scenario);
-         // setFileChanges(response.data.changes);
+         setUploadedDocuments(response.data.documents);
+         setConsultNotes(response.data.consult_note);
          getAllMessages(response.data.id);
          setIsEdited(false);
+         const firstDocument = response.data.documents[0];
+         if (firstDocument) {
+            await getDocumentById(firstDocument.id);
+            setSelectedDocumentId(firstDocument.id);
+         }
+         const firstConsult = response.data.consult_note[0];
+         if (firstConsult) {
+            await getConsultById(firstConsult.id);
+            setSelectedConsultId(firstConsult.id);
+         }
       } catch (err: unknown) {
          console.error("Error fetching messages:", err);
          setError("Failed to fetch messages");
@@ -281,14 +323,44 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const deleteFileFromReport = async (
       reportId: string,
-      documentId: string
+      documentId: string,
+      vsFileId: string
    ) => {
       try {
          const response = await deleteFileFromReportRequest(
             reportId,
-            documentId
+            documentId,
+            vsFileId
          );
-         if (!response.successful) {
+         if (!response.successful || response.data === null) {
+            setError(response.error?.message || "Unknown error occurred");
+         } else {
+            setError(null);
+            setIsEdited(false);
+            getReports(100, 0);
+         }
+      } catch (err: unknown) {
+         if (err instanceof Error) {
+            console.error("Error deleting file:", err.message);
+         } else {
+            console.error("Unknown error:", err);
+         }
+         setError("File delete failed");
+      } finally {
+         setIsLoading(false);
+      }
+   };
+
+   const deleteConsultFromReport = async (
+      reportId: string,
+      consultId: string
+   ) => {
+      try {
+         const response = await deleteConsultFromReportRequest(
+            reportId,
+            consultId
+         );
+         if (!response.successful || response.data === null) {
             setError(response.error?.message || "Unknown error occurred");
          } else {
             setError(null);
@@ -313,7 +385,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    const deleteReport = async (reportId: string) => {
       try {
          const response = await deleteReportRequest(reportId);
-         if (!response.successful) {
+         if (!response.successful || response.data === null) {
             setError("Unknown error occurred");
          } else {
             setError(null);
@@ -338,6 +410,48 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       }
    };
 
+   const getDocumentById = async (documentId: string) => {
+      try {
+         const response = await getDocumentDetailsById(documentId);
+         if (!response.successful) {
+            setError(response.error?.message || "Unknown error occurred");
+         } else {
+            setError(null);
+            setDocumentText(response.data.content);
+         }
+      } catch (err: unknown) {
+         if (err instanceof Error) {
+            console.error("Error fetching document:", err.message);
+         } else {
+            console.error("Unknown error:", err);
+         }
+         setError("Failed to fetch document");
+      } finally {
+         setIsLoading(false);
+      }
+   };
+
+   const getConsultById = async (consultId: string) => {
+      try {
+         const response = await getConsultDetailsById(consultId);
+         if (!response.successful) {
+            setError(response.error?.message || "Unknown error occurred");
+         } else {
+            setError(null);
+            setConsultText(response.data.content);
+         }
+      } catch (err: unknown) {
+         if (err instanceof Error) {
+            console.error("Error fetching document:", err.message);
+         } else {
+            console.error("Unknown error:", err);
+         }
+         setError("Failed to fetch document");
+      } finally {
+         setIsLoading(false);
+      }
+   };
+
    return (
       <FileUploadContext.Provider
          value={{
@@ -354,10 +468,22 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             setSelectedFiles,
             // fileChanges,
             // setFileChanges,
+            uploadedDocuments,
+            getDocumentById,
+            getConsultById,
+            documentText,
+            consultText,
+            consultNotes,
+            selectedDocumentId,
+            selectedConsultId,
+            setSelectedDocumentId,
+            setSelectedConsultId,
             scenario,
             setScenario,
             selectedFileId,
             setSelectedFileId,
+            setConsultText,
+            setDocumentText,
             getAllMessages,
             chatData,
             sendChatMessage,
@@ -365,12 +491,13 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             getChatDataById,
             deleteFilesHistory,
             deleteFileFromReport,
+            deleteConsultFromReport,
             deleteReport,
             setIsLoading,
             isEdited,
             setIsEdited,
-            setEditingReport,
-            editingReport,
+            setEditingUploadedText,
+            editingUploadedText,
             setEditingChanges,
             editingChanges,
          }}

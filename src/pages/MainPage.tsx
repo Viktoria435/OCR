@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import AgentData from "../components/AgentData";
 import FileHistory from "../components/FileHistory";
 import Loading from "../components/Loading";
-import OutputComponent from "../components/OutputComponent";
 import { useFileUpload } from "../context/fileContext";
 import AgentUploader from "../components/AgentUploader";
-import ConsultButton from "../components/Buttons/ConsultButton";
+// import ConsultButton from "../components/Buttons/ConsultButton";
 import SaveButton from "../components/Buttons/SaveButton";
 import Modal from "../components/Modals/Modal";
 // import UploaderFileModal from "../components/Modals/UploaderFileModal";
@@ -13,9 +12,10 @@ import SearchPatient from "../components/SearchPatient";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import Scenario from "../components/Scenario";
-import ScenarioButton from "../components/Buttons/ScenarioButton";
 import UserProfile from "../components/UserProfile";
 import FileProgress from "../components/FileProgress";
+import UploadedRecords from "../components/UploadedRecords";
+import GeneratedNotes from "../components/GeneratedNotes";
 
 const MainPage = () => {
    const navigate = useNavigate();
@@ -54,30 +54,30 @@ const MainPage = () => {
             {/* <DeleteHistory /> */}
          </div>
          <div className="flex flex-col p-8 gap-y-5 overflow-hidden">
-            <div className="flex relative justify-center w-full">
-               <p className="text-[#434343] font-bold text-xl underline">
-                  Output
+            <div className="flex relative w-full">
+               <p className="text-gray-500 text-[22px] font-medium">
+                  Generated Notes
                </p>
                <div className="absolute left-0 top-1/2 transform -translate-y-1/2"></div>
-               <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+               {/* <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
                   <ConsultButton />
                </div>
                <div className="absolute right-32 top-1/2 transform -translate-y-1/2">
                   <ScenarioButton handleOpen={() => setIsOpenScenario(true)} />
-               </div>
-               <div className="absolute right-36 top-1/2 transform -translate-y-1/2">
+               </div> */}
+               <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
                   <SaveButton />
                </div>
             </div>
             <div className="flex-grow overflow-auto h-full">
-               <OutputComponent />
+               <GeneratedNotes />
             </div>
-            {/* <p className="text-[#434343] font-bold text-xl underline">
-               Patient's changes
+            <p className="text-gray-500 text-start text-[22px]  font-medium">
+               Uploaded Records
             </p>
             <div className="flex-grow overflow-auto h-full">
-               <PatientChanges />
-            </div> */}
+               <UploadedRecords />
+            </div>
          </div>
 
          <div className="flex flex-col p-4 gap-y-5 overflow-hidden grow bg-white ">

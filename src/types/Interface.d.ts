@@ -11,6 +11,12 @@ export interface IDocument {
    id: string;
    filename: string;
    vsId: string;
+   datetimeInserted: string;
+}
+
+export interface IConsult {
+   id: string;
+   datetimeInserted: string;
 }
 
 export interface IConsult {
@@ -36,7 +42,7 @@ export interface Message {
    vsId: string;
    filename: string;
    scenario: string;
-   consult_note: string;
+   consult_note: IConsult[];
    datetimeInserted: string;
    datetimeUpdated: string;
    patient: IPatient;
@@ -53,6 +59,14 @@ export interface UploadFileResponse {
 
 export interface UploadFilesResponse {
    data: Message;
+   successful: boolean;
+   error?: {
+      message: string;
+   } | null;
+}
+
+export interface DeleteFilesResponse {
+   data: Message | null;
    successful: boolean;
    error?: {
       message: string;
@@ -124,3 +138,29 @@ export interface DeleteReportRequest {
    successful: boolean;
    error: null;
 }
+
+export interface GetDetailsResponse {
+   data: {
+      id: string;
+      originalId: string;
+      reportId: string;
+      content: string;
+   }
+   successful: boolean;
+   error?: {
+      message: string;
+   } | null;
+}
+
+interface UpdateDocumentPayload {
+   documentId: string;
+   reportId: string;
+   text: string;
+}
+
+interface UpdateConsultPayload {
+   consultId: string;
+   reportId: string;
+   text: string;
+}
+

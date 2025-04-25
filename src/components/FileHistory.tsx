@@ -62,7 +62,8 @@ const FileHistory = () => {
                                        </span>
                                        <DeleteFileFromReportButton
                                           reportId={file.id}
-                                          documentId={doc.vsId}
+                                          documentId={doc.id}
+                                          vsFileId={doc.vsId}
                                        />
                                     </div>
                                  </li>
