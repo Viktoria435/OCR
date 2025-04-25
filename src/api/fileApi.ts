@@ -1,10 +1,13 @@
 import api from ".";
 import {
+   DeleteFilesResponse,
    DeleteReportRequest,
    GetChatMessagesResponse,
+   GetDetailsResponse,
    GetMessagesResponse,
    SendMessageRequest,
    SendMessageResponse,
+   UpdateDocumentPayload,
    UploadConsultReport,
    UploadFileResponse,
    UploadFilesResponse,
@@ -172,15 +175,19 @@ export const getReportByIdRequest = async (
 
 export const deleteFileFromReportRequest = async (
    reportId: string,
-   documentId: string
-): Promise<UploadFilesResponse> => {
+   documentId: string,
+   vsFileId: string
+): Promise<DeleteFilesResponse> => {
    const token = checkToken();
    try {
-      const response = await api.delete<UploadFilesResponse>(
+      const response = await api.delete<DeleteFilesResponse>(
          `/api/report/${reportId}/${documentId}/delete`,
          {
             headers: {
                Authorization: `Bearer ${token}`,
+            },
+            params: {
+               vsFileId,
             },
          }
       );
@@ -190,6 +197,31 @@ export const deleteFileFromReportRequest = async (
       throw new Error("Failed to delete file from report");
    }
 };
+
+export const deleteConsultFromReportRequest = async (
+   reportId: string,
+   consultId: string,
+): Promise<DeleteFilesResponse> => {
+   const token = checkToken();
+   try {
+      const response = await api.delete<DeleteFilesResponse>(
+         `/api/report/${consultId}/consult`,
+         {
+            headers: {
+               Authorization: `Bearer ${token}`,
+            },
+            params: {
+               reportId,
+            },
+         }
+      );
+      return response.data;
+   } catch (error: unknown) {
+      handleApiError(error);
+      throw new Error("Failed to delete file from report");
+   }
+};
+
 
 export const deleteReportRequest = async (
    reportId: string
@@ -364,3 +396,93 @@ export const replaceReport = async (
 //       throw new Error("Failed to fetch messages");
 //    }
 // };
+
+export const getDocumentDetailsById = async (
+   documentId: string
+): Promise<GetDetailsResponse> => {
+   const token = checkToken();
+   try {
+      const response = await api.get<GetDetailsResponse>(
+         `/api/report/document/${documentId}`,
+         {
+            headers: {
+               Authorization: `Bearer ${token}`,
+            },
+         }
+      );
+      return response.data;
+   } catch (error: unknown) {
+      handleApiError(error);
+      throw new Error("Failed to get document details by id");
+   }
+};
+
+export const getConsultDetailsById = async (
+   consultId: string
+): Promise<GetDetailsResponse> => {
+   const token = checkToken();
+   try {
+      const response = await api.get<GetDetailsResponse>(
+         `/api/report/${consultId}/consult`,
+         {
+            headers: {
+               Authorization: `Bearer ${token}`,
+            },
+         }
+      );
+      return response.data;
+   } catch (error: unknown) {
+      handleApiError(error);
+      throw new Error("Failed to get document details by id");
+   }
+};
+
+export const updateDocument = async (
+   payload: UpdateDocumentPayload
+): Promise<GetDetailsResponse> => {
+   const token = checkToken();
+   try {
+      const response = await api.patch<GetDetailsResponse>(
+         `/api/report/${payload.documentId}/document`,
+         {
+            reportId: payload.reportId,
+            documentId: payload.documentId,
+            text: payload.text,
+         },
+         {
+            headers: {
+               Authorization: `Bearer ${token}`,
+            },
+         }
+      );
+      return response.data;
+   } catch (error: unknown) {
+      handleApiError(error);
+      throw new Error("Failed to update document");
+   }
+};
+
+export const updateConsult = async (
+   consultId: string,
+   text: string
+): Promise<GetDetailsResponse> => {
+   const token = checkToken();
+   try {
+      const response = await api.patch<GetDetailsResponse>(
+         `/api/report/${consultId}/document`,
+         {
+            consultId,
+            text,
+         },
+         {
+            headers: {
+               Authorization: `Bearer ${token}`,
+            },
+         }
+      );
+      return response.data;
+   } catch (error: unknown) {
+      handleApiError(error);
+      throw new Error("Failed to update document");
+   }
+};

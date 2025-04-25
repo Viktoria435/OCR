@@ -8,3 +8,14 @@ export const base64ToBytes = (base64String: string): Uint8Array => {
 
    return bytes;
 };
+
+export const formatDateToMDY = (isoDate: string): string => {
+   const date = new Date(isoDate);
+   if (isNaN(date.getTime())) return "Invalid Date";
+
+   return new Intl.DateTimeFormat("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+   }).format(date);
+};
