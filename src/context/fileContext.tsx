@@ -342,6 +342,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       vsFileId: string
    ) => {
       try {
+      setIsLoading(true);
+
          const response = await deleteFileFromReportRequest(
             reportId,
             documentId,
@@ -370,7 +372,10 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       reportId: string,
       consultId: string
    ) => {
+
       try {
+      setIsLoading(true);
+
          const response = await deleteConsultFromReportRequest(
             reportId,
             consultId
@@ -399,6 +404,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const deleteReport = async (reportId: string) => {
       try {
+      setIsLoading(true);
+
          const response = await deleteReportRequest(reportId);
          if (!response.successful || response.data === null) {
             setError("Unknown error occurred");
@@ -427,6 +434,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const getDocumentById = async (documentId: string) => {
       try {
+      setIsLoading(true);
          const response = await getDocumentDetailsById(documentId);
          if (!response.successful) {
             setError(response.error?.message || "Unknown error occurred");
@@ -448,6 +456,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const getConsultById = async (consultId: string) => {
       try {
+      setIsLoading(true);
+
          const response = await getConsultDetailsById(consultId);
          if (!response.successful) {
             setError(response.error?.message || "Unknown error occurred");
