@@ -21,6 +21,7 @@ import {
    getDocumentDetailsById,
    deleteConsultFromReportRequest,
    getConsultDetailsById,
+   generateConsultReport,
 } from "../api/fileApi";
 
 interface FileUploadContextType {
@@ -69,6 +70,7 @@ interface FileUploadContextType {
    setFileReport: (text: string) => void;
    //setFileChanges: (text: string) => void;
    setScenario: (text: string) => void;
+   generateConsult: (reportId: string) => void;
    deleteFilesHistory: () => void;
    setIsLoading: (isLoading: boolean) => void;
    isEdited: boolean;
@@ -171,6 +173,20 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             setScenario(response.data.scenario);
             getAllMessages(response.data.id);
             getReports(100, 0);
+            setFileReport(response.data.report);
+         setUploadedDocuments(response.data.documents);
+         setConsultNotes(response.data.consult_note);
+         setIsEdited(false);
+         const firstDocument = response.data.documents[0];
+         if (firstDocument) {
+            await getDocumentById(firstDocument.id);
+            setSelectedDocumentId(firstDocument.id);
+         }
+         const firstConsult = response.data.consult_note[0];
+         if (firstConsult) {
+            await getConsultById(firstConsult.id);
+            setSelectedConsultId(firstConsult.id);
+         }
          }
       } catch (err: unknown) {
          if (err instanceof Error) {
@@ -337,6 +353,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       vsFileId: string
    ) => {
       try {
+      setIsLoading(true);
+
          const response = await deleteFileFromReportRequest(
             reportId,
             documentId,
@@ -366,7 +384,10 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       reportId: string,
       consultId: string
    ) => {
+
       try {
+      setIsLoading(true);
+
          const response = await deleteConsultFromReportRequest(
             reportId,
             consultId
@@ -393,6 +414,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const deleteReport = async (reportId: string) => {
       try {
+      setIsLoading(true);
+
          const response = await deleteReportRequest(reportId);
          if (!response.successful || response.data === null) {
             setError("Unknown error occurred");
@@ -421,6 +444,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const getDocumentById = async (documentId: string) => {
       try {
+      setIsLoading(true);
          const response = await getDocumentDetailsById(documentId);
          if (!response.successful) {
             setError(response.error?.message || "Unknown error occurred");
@@ -442,6 +466,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const getConsultById = async (consultId: string) => {
       try {
+      setIsLoading(true);
+
          const response = await getConsultDetailsById(consultId);
          if (!response.successful) {
             setError(response.error?.message || "Unknown error occurred");
@@ -460,6 +486,19 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setIsLoading(false);
       }
    };
+
+   const generateConsult = async (reportId: string) => {
+      try {
+         setIsLoading(true);
+            await generateConsultReport(reportId);
+            getChatDataById(reportId);
+      } catch (error) {
+         console.error("Error:", error);
+      } finally {
+         setIsLoading(false);
+      }
+   }
+   
 
    return (
       <FileUploadContext.Provider
@@ -494,6 +533,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             setConsultText,
             setDocumentText,
             getAllMessages,
+            generateConsult,
             chatData,
             sendChatMessage,
             sendAudioChatMessage,

@@ -10,7 +10,7 @@ const AgentData = () => {
       if (messagesEndRef.current) {
          messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
       }
-   }, [chatData, isMessageLoading]); // Вызывается при каждом изменении `chatData`
+   }, [chatData, isMessageLoading]);
 
    return (
       <div className="bg-white flex flex-col items-start flex-grow text-black text-start rounded-md px-4  overflow-auto border-2 border-gray-300">
