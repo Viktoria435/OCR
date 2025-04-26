@@ -16,6 +16,7 @@ import UserProfile from "../components/UserProfile";
 import FileProgress from "../components/FileProgress";
 import UploadedRecords from "../components/UploadedRecords";
 import GeneratedNotes from "../components/GeneratedNotes";
+import PushToEMRButton from "../components/Buttons/PushToEMRButton";
 
 const MainPage = () => {
    const navigate = useNavigate();
@@ -53,11 +54,14 @@ const MainPage = () => {
             {/* <UploadFileButton onClick={() => setIsOpenUploader(true)} /> */}
             {/* <DeleteHistory /> */}
          </div>
-         <div className="flex flex-col p-8 gap-y-5 overflow-hidden">
+         <div className="flex flex-col p-8 gap-y-5 overflow-hidden bg-gray-100">
             <div className="flex relative w-full">
-               <p className="text-gray-500 text-[22px] font-medium">
+               <div className="flex items-center justify-between w-full">
+               <p className="text-gray-500 text-2xl font-medium">
                   Generated Notes
                </p>
+               <PushToEMRButton />
+               </div>
                <div className="absolute left-0 top-1/2 transform -translate-y-1/2"></div>
                {/* <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
                   <ConsultButton />
@@ -65,16 +69,19 @@ const MainPage = () => {
                <div className="absolute right-32 top-1/2 transform -translate-y-1/2">
                   <ScenarioButton handleOpen={() => setIsOpenScenario(true)} />
                </div> */}
-               <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+               <div className="absolute right-1/2 top-1/2 transform -translate-y-1/2 translate-x-1/2">
                   <SaveButton />
                </div>
             </div>
             <div className="flex-grow overflow-auto h-full">
                <GeneratedNotes />
             </div>
-            <p className="text-gray-500 text-start text-[22px]  font-medium">
+            <div className="flex items-center justify-between w-full">
+            <p className="text-gray-500 text-start text-2xl  font-medium">
                Uploaded Records
             </p>
+            <PushToEMRButton />
+               </div>
             <div className="flex-grow overflow-auto h-full">
                <UploadedRecords />
             </div>

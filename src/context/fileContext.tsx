@@ -5,7 +5,6 @@ import {
    useState,
    useEffect,
 } from "react";
-import { createContext, useContext, ReactNode, useState } from "react";
 import { Chat, IConsult, IDocument, Message } from "../types/Interface";
 import {
    getChatMessagesRequest,
@@ -44,8 +43,8 @@ interface FileUploadContextType {
    setSelectedFileId: (text: string | null) => void;
    selectedDocumentId: string | null;
    selectedConsultId: string | null;
-   setSelectedDocumentId: (docId: string) => void;
-   setSelectedConsultId: (consId: string) => void;
+   setSelectedDocumentId: (docId: string | null) => void;
+   setSelectedConsultId: (consId: string | null) => void;
    setDocumentText: (text: string) => void;
    setConsultText: (text: string) => void;
    getChatDataById: (chatId: string) => void;
@@ -76,6 +75,8 @@ interface FileUploadContextType {
    setIsEdited: (isEdited: boolean) => void;
    editingUploadedText: string | null;
    setEditingUploadedText: (text: string) => void;
+   editingConsultText: string | null;
+   setEditingConsultText: (text: string) => void;
    editingChanges: string | null;
    setEditingChanges: (text: string) => void;
 }
@@ -100,14 +101,21 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
    const [editingUploadedText, setEditingUploadedText] = useState<
-   string | null
->(null);
+      string | null
+   >(null);
+   const [editingConsultText, setEditingConsultText] = useState<string | null>(
+      null
+   );
    const [uploadedDocuments, setUploadedDocuments] = useState<IDocument[]>([]);
    const [consultNotes, setConsultNotes] = useState<IConsult[]>([]);
    const [documentText, setDocumentText] = useState<string | null>(null);
    const [consultText, setConsultText] = useState<string | null>(null);
-   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
-   const [selectedConsultId, setSelectedConsultId] = useState<string | null>(null);
+   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(
+      null
+   );
+   const [selectedConsultId, setSelectedConsultId] = useState<string | null>(
+      null
+   );
 
    // const uploadFile = async (file: File) => {
    //    setIsLoading(true);
@@ -140,6 +148,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       if (selectedFileId === null) {
          setFileReport(null);
          setScenario(null);
+         setConsultNotes([]);
+         setUploadedDocuments([]);
          setChatData([]);
       }
    }, [selectedFileId]);
@@ -338,6 +348,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             setError(null);
             setIsEdited(false);
             getReports(100, 0);
+            getChatDataById(reportId);
          }
       } catch (err: unknown) {
          if (err instanceof Error) {
@@ -360,15 +371,13 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             reportId,
             consultId
          );
-         if (!response.successful || response.data === null) {
+         if (!response.successful) {
             setError(response.error?.message || "Unknown error occurred");
          } else {
             setError(null);
-            setFileReport(response.data.report);
-            setSelectedFileId(response.data.id);
             setIsEdited(false);
-            getAllMessages(response.data.id);
             getReports(100, 0);
+            getChatDataById(reportId);
          }
       } catch (err: unknown) {
          if (err instanceof Error) {
@@ -497,7 +506,9 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             isEdited,
             setIsEdited,
             setEditingUploadedText,
+            setEditingConsultText,
             editingUploadedText,
+            editingConsultText,
             setEditingChanges,
             editingChanges,
          }}

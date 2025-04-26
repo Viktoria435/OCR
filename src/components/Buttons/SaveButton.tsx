@@ -1,14 +1,16 @@
-import {  updateDocument } from "../../api/fileApi";
+import {  updateConsult, updateDocument } from "../../api/fileApi";
 import { useFileUpload } from "../../context/fileContext";
 
 const SaveButton = () => {
    const {
       selectedFileId,
       selectedDocumentId,
-      // selectedConsultId,
+      selectedConsultId,
       setDocumentText,
+      setConsultText,
       isEdited,
       editingUploadedText,
+      editingConsultText,
       setIsEdited
    } = useFileUpload();
 
@@ -24,22 +26,22 @@ const SaveButton = () => {
              setDocumentText(response.data.content);
             setIsEdited(false);
          } catch (error) {
-            console.error("Error saving report:", error);
+            console.error("Error saving:", error);
          }
       }
 
-      // if (editingChanges && selectedFileId && editingChanges !== "") {
-      //    try {
-      //       const response = await replaceReportChanges(
-      //          selectedFileId,
-      //          editingChanges
-      //       );
-      //       setFileChanges(response.data.changes);
-      //       setIsEdited(false);
-      //    } catch (error) {
-      //       console.error("Error saving changes:", error);
-      //    }
-      // }
+      if (editingConsultText && selectedFileId && selectedConsultId && editingConsultText !== "") {
+         try {
+            const response = await updateConsult(
+               selectedConsultId,
+               editingConsultText
+            );
+            setConsultText(response.data.content);
+            setIsEdited(false);
+         } catch (error) {
+            console.error("Error saving:", error);
+         }
+      }
    };
 
    return (

@@ -200,7 +200,7 @@ export const deleteFileFromReportRequest = async (
 
 export const deleteConsultFromReportRequest = async (
    reportId: string,
-   consultId: string,
+   consultId: string
 ): Promise<DeleteFilesResponse> => {
    const token = checkToken();
    try {
@@ -221,7 +221,6 @@ export const deleteConsultFromReportRequest = async (
       throw new Error("Failed to delete file from report");
    }
 };
-
 
 export const deleteReportRequest = async (
    reportId: string
@@ -446,13 +445,14 @@ export const updateDocument = async (
       const response = await api.patch<GetDetailsResponse>(
          `/api/report/${payload.documentId}/document`,
          {
-            reportId: payload.reportId,
-            documentId: payload.documentId,
             text: payload.text,
          },
          {
             headers: {
                Authorization: `Bearer ${token}`,
+            },
+            params: {
+               reportId: payload.reportId,
             },
          }
       );
@@ -470,10 +470,9 @@ export const updateConsult = async (
    const token = checkToken();
    try {
       const response = await api.patch<GetDetailsResponse>(
-         `/api/report/${consultId}/document`,
+         `/api/report/${consultId}/consult`,
          {
-            consultId,
-            text,
+            text: text,
          },
          {
             headers: {
