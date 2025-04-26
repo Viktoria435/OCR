@@ -5,7 +5,6 @@ import {
    useState,
    useEffect,
 } from "react";
-import { createContext, useContext, ReactNode, useState } from "react";
 import { Chat, IConsult, IDocument, Message } from "../types/Interface";
 import {
    getChatMessagesRequest,
@@ -22,6 +21,7 @@ import {
    getDocumentDetailsById,
    deleteConsultFromReportRequest,
    getConsultDetailsById,
+   generateConsultReport,
 } from "../api/fileApi";
 
 interface FileUploadContextType {
@@ -70,6 +70,7 @@ interface FileUploadContextType {
    setFileReport: (text: string) => void;
    //setFileChanges: (text: string) => void;
    setScenario: (text: string) => void;
+   generateConsult: (reportId: string) => void;
    deleteFilesHistory: () => void;
    setIsLoading: (isLoading: boolean) => void;
    isEdited: boolean;
@@ -161,6 +162,20 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             setScenario(response.data.scenario);
             getAllMessages(response.data.id);
             getReports(100, 0);
+            setFileReport(response.data.report);
+         setUploadedDocuments(response.data.documents);
+         setConsultNotes(response.data.consult_note);
+         setIsEdited(false);
+         const firstDocument = response.data.documents[0];
+         if (firstDocument) {
+            await getDocumentById(firstDocument.id);
+            setSelectedDocumentId(firstDocument.id);
+         }
+         const firstConsult = response.data.consult_note[0];
+         if (firstConsult) {
+            await getConsultById(firstConsult.id);
+            setSelectedConsultId(firstConsult.id);
+         }
          }
       } catch (err: unknown) {
          if (err instanceof Error) {
@@ -452,6 +467,19 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       }
    };
 
+   const generateConsult = async (reportId: string) => {
+      try {
+         setIsLoading(true);
+            await generateConsultReport(reportId);
+            getChatDataById(reportId);
+      } catch (error) {
+         console.error("Error:", error);
+      } finally {
+         setIsLoading(false);
+      }
+   }
+   
+
    return (
       <FileUploadContext.Provider
          value={{
@@ -485,6 +513,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             setConsultText,
             setDocumentText,
             getAllMessages,
+            generateConsult,
             chatData,
             sendChatMessage,
             sendAudioChatMessage,

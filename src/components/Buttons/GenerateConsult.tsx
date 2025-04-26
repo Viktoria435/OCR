@@ -1,40 +1,28 @@
 import { FC } from "react";
 import { useFileUpload } from "../../context/fileContext";
-import { generateConsultReport } from "../../api/fileApi";
 
 interface GenerateConsultProps {
    isActive: boolean;
- };
+}
 
-const GenerateConsult:FC <GenerateConsultProps> = ({isActive}) => {
-   const { selectedFileId, setIsLoading } = useFileUpload();
+const GenerateConsult: FC<GenerateConsultProps> = ({ isActive }) => {
+   const { selectedFileId, generateConsult } = useFileUpload();
 
    const handleGenerate = async () => {
-      console.log(isActive)
-      if (isActive) {
-         try {
-            setIsLoading(true);
-            if (selectedFileId) {
-               const response = await generateConsultReport(selectedFileId);
-               console.log(response);
-              
-            } else {
-               console.error("selectedFileId is undefined");
-            }
-         } catch (error) {
-            console.error("Error downloading PDF:", error);
-         } finally {
-            setIsLoading(false);
-         }
+      console.log(isActive);
+      if (isActive && selectedFileId) {
+         generateConsult(selectedFileId);
       }
-   }
-
-    
+   };
 
    return (
       <div>
          <button
-            className="bg-gray-500 flex justify-between items-center w-full text-white font-semibold py-4 px-3 text-lg rounded-md cursor-pointer"
+            className={`${
+               isActive
+                  ? "bg-blue-500 cursor-pointer"
+                  : "bg-[#595959] cursor-not-allowed"
+            } flex justify-between items-center w-full text-white font-semibold py-4 px-3 text-lg rounded-md  `}
             onClick={handleGenerate}
          >
             <div className="bg-white rounded-md py-1 px-5">

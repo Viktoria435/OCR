@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFileUpload } from "../context/fileContext";
 import GenerateConsult from "./Buttons/GenerateConsult";
 import UploaderFileModal from "./Modals/UploaderFileModal";
@@ -12,7 +12,11 @@ const FileProgress = () => {
    const [isOpen, setIsOpen] = useState<boolean>(false);
    const [canGenerateConsult, setCanGenerateConsult] = useState<boolean>(true);
 
+   // Ref to store active timeout IDs for clearing (browser returns number)
+   const timeoutsRef = useRef<number[]>([]);
+
    useEffect(() => {
+      // Enable generate button when all done or no files
       if (
          (selectedFiles.length > 0 &&
             progressList.length === selectedFiles.length &&
@@ -26,56 +30,73 @@ const FileProgress = () => {
    }, [progressList, selectedFiles]);
 
    useEffect(() => {
-    if (selectedFiles.length > 0 && !uploadStarted) {
-       startUpload();
-       setUploadStarted(true);
-    }
- }, [selectedFiles]);
+      // Start upload when files selected
+      if (selectedFiles.length > 0 && !uploadStarted) {
+         startUpload();
+         setUploadStarted(true);
+      }
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [selectedFiles]);
 
    useEffect(() => {
       if (isFilesUpload) {
-         selectedFiles.forEach((_, index) => {
-            let current = progressList[index] || 0;
+         // Clear all pending timeouts
+         timeoutsRef.current.forEach((id) => clearTimeout(id));
+         timeoutsRef.current = [];
 
-            const interval = setInterval(() => {
-               current += Math.floor(Math.random() * 3) + 1;
-
-               setProgressList((prev) => {
-                  const updated = [...prev];
-                  updated[index] = Math.min(current, 100);
-                  return updated;
-               });
-
-               if (current >= 100) {
-                  clearInterval(interval);
-               }
-            }, 200 + Math.random() * 200);
-         });
+         // Immediately set all progress to 100%
+         setProgressList(selectedFiles.map(() => 100));
       }
-   }, [isFilesUpload]);
+   }, [isFilesUpload, selectedFiles]);
 
    const startUpload = () => {
-      const newProgress = selectedFiles.map(() => 0);
-      setProgressList(newProgress);
+      // Clear any existing timeouts
+      timeoutsRef.current.forEach((id) => clearTimeout(id));
+      timeoutsRef.current = [];
+
+      // Init progress
+      setProgressList(selectedFiles.map(() => 0));
 
       selectedFiles.forEach((_, index) => {
-         const maxProgress = Math.floor(Math.random() * 30) + 60;
          let current = 0;
 
-         const interval = setInterval(() => {
-            const increment = Math.floor(Math.random() * 2) + 1;
-            current += increment;
+         const tick = () => {
+            // Random tick interval: 800ms to 2000ms
+            const delay = 800 + Math.random() * 1200;
+            const timeoutId = window.setTimeout(() => {
+               setProgressList((prev) => {
+                  const updated = [...prev];
 
-            setProgressList((prev) => {
-               const updated = [...prev];
-               updated[index] = Math.min(current, maxProgress);
-               return updated;
-            });
+                  if (isFilesUpload) {
+                     // If upload confirmed, jump to 100%
+                     updated[index] = 100;
+                     return updated;
+                  }
 
-            if (current >= maxProgress) {
-               clearInterval(interval);
-            }
-         }, 400 + Math.random() * 300);
+                  // Pause at 90-95%
+                  if (updated[index] >= 90 && updated[index] < 95) {
+                     // still schedule next tick to check flag
+                     tick();
+                     return updated;
+                  }
+
+                  // Lively random step: 1% to 6% per tick
+                  const step = 1 + Math.random() * 5;
+                  current += step;
+                  updated[index] = Math.min(Math.round(current), 100);
+
+                  if (updated[index] < 100) {
+                     tick();
+                  }
+
+                  return updated;
+               });
+            }, delay);
+
+            timeoutsRef.current.push(timeoutId);
+         };
+
+         tick();
       });
    };
 
@@ -83,19 +104,13 @@ const FileProgress = () => {
       <div>
          <div className="bg-white flex rounded-md flex-col items-center justify-between h-[90%] w-full ">
             <div className="flex flex-col w-full gap-y-5 items-end">
-               {<button
+               <button
                   onClick={() => setIsOpen(true)}
                   className="w-full border-2 rounded-md text-center border-gray-300 overflow-hidden text-black px-2 text-lg cursor-pointer"
+                  disabled={uploadStarted}
                >
                   Upload Files
-                  {/* <input
-                     type="file"
-                     className="hidden"
-                     onChange={handleFileChange}
-                     accept=".pdf,image/jpeg,image/png"
-                     multiple
-                  /> */}
-               </button>}
+               </button>
                <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                   <div className="text-center">
                      <UploaderFileModal
@@ -136,7 +151,7 @@ const FileProgress = () => {
 
                         <div className="w-full h-2 bg-gray-200 rounded">
                            <div
-                              className="h-full bg-blue-500 rounded transition-all duration-200"
+                              className="h-full bg-blue-500 rounded transition-all duration-700"
                               style={{
                                  width: `${progressList[index] || 0}%`,
                               }}
