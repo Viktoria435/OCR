@@ -154,6 +154,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setUploadedDocuments([]);
          setChatData([]);
       }
+      setEditingConsultText(null);
+      setEditingUploadedText(null);
       setSelectedFiles([]);
    }, [selectedFileId]);
 

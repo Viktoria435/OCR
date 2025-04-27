@@ -83,7 +83,7 @@ const GeneratedNotes = () => {
                   className="w-full h-full resize-none focus:outline-none"
                />
             ) : (
-               <div className="space-y-2 p-1">
+               <div className="space-y-2 p-1 prose">
                   <ReactMarkdown>{consultText}</ReactMarkdown>
                </div>
             )}

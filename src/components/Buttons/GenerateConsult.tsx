@@ -16,7 +16,7 @@ const GenerateConsult: FC<GenerateConsultProps> = ({ isActive }) => {
    };
 
    return (
-      <div>
+      <div className="w-full">
          <button
             className={`${
                isActive
