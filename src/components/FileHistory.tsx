@@ -32,16 +32,33 @@ const FileHistory = () => {
                            selectedFileId === file.id ? "text-blue-700" : ""
                         } flex items-center justify-between`}
                      >
-                        <div className="text-sm flex flex-col">
-                           <span
-                              className="hover:text-blue-700 "
-                              onClick={() => {
-                                 handleFileClick(file.id);
-                              }}
-                           >
-                              {file.patient.name}
-                           </span>
-                           {/* <span>{file.patient.date_of_birth}</span> */}
+                        <div
+                           onClick={() => {
+                              handleFileClick(file.id);
+                           }}
+                           className="text-sm flex flex-col hover:text-blue-700 py-1"
+                        >
+                           <span className="">{file.patient.name}</span>
+                           <div className="flex justify-between text-xs">
+                              <span>
+                                 DOB:{` `}
+                                 {(() => {
+                                    const date = new Date(
+                                       file.patient.date_of_birth
+                                    );
+                                    const day = String(date.getDate()).padStart(
+                                       2,
+                                       "0"
+                                    );
+                                    const month = String(
+                                       date.getMonth() + 1
+                                    ).padStart(2, "0");
+                                    const year = date.getFullYear();
+                                    return `${day}/${month}/${year}`;
+                                 })()}
+                              </span>
+                              <span>MD: {file.patient.medical_card}</span>
+                           </div>
                         </div>
                         <div className="flex space-x-2">
                            <AddFileToReportButton reportId={file.id} />

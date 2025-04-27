@@ -24,6 +24,7 @@ const FileProgress = () => {
          selectedFiles.length === 0
       ) {
          setCanGenerateConsult(true);
+         setUploadStarted(false);
       } else {
          setCanGenerateConsult(false);
       }
@@ -104,13 +105,41 @@ const FileProgress = () => {
       <div>
          <div className="bg-white flex rounded-md flex-col items-center justify-between h-[90%] w-full ">
             <div className="flex flex-col w-full gap-y-5 items-end">
-               <button
+               {/* <button
                   onClick={() => setIsOpen(true)}
                   className="w-full border-2 rounded-md text-center border-gray-300 overflow-hidden text-black px-2 text-lg cursor-pointer"
-                  disabled={uploadStarted}
+                  disabled={!isFilesUpload}
                >
-                  Upload Files
-               </button>
+                  Add New Patient
+               </button> */}
+               <button
+            className={`${
+               isFilesUpload
+                  ? "bg-[#595959] cursor-pointer"
+                  : "bg-[#a2a2a2] cursor-not-allowed"
+            } flex justify-between items-center w-full text-white font-semibold py-4 px-3 text-lg rounded-md  `}
+            onClick={() => setIsOpen(true)}
+            disabled={!isFilesUpload}
+
+         >
+            <div className="bg-white rounded-md py-1 px-5">
+               <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="size-6 text-gray-500"
+               >
+                  <path
+                     strokeLinecap="round"
+                     strokeLinejoin="round"
+                     d="m8.25 4.5 7.5 7.5-7.5 7.5"
+                  />
+               </svg>
+            </div>
+            Add New Patient
+         </button>
                <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                   <div className="text-center">
                      <UploaderFileModal
@@ -130,22 +159,7 @@ const FileProgress = () => {
                               <span className="text-xs">
                                  {progressList[index] ?? 0}%
                               </span>
-                              <button className="ml-2 hover:text-red-500">
-                                 <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth={1.5}
-                                    stroke="currentColor"
-                                    className="size-6"
-                                 >
-                                    <path
-                                       strokeLinecap="round"
-                                       strokeLinejoin="round"
-                                       d="M6 18 18 6M6 6l12 12"
-                                    />
-                                 </svg>
-                              </button>
+                              
                            </div>
                         </div>
 

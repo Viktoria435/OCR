@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
 import { useFileUpload } from "../context/fileContext";
 import MicroButton from "./Buttons/MicroButton";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const AgentData = () => {
-   const { chatData, isMessageLoading } = useFileUpload();
+   const { chatData, isMessageLoading, scenario } = useFileUpload();
    const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
    useEffect(() => {
@@ -18,9 +20,24 @@ const AgentData = () => {
             Agent
             <MicroButton />
          </p>
+         <div className="scenario w-full text-sm">
+            {scenario && (
+               <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                     table: ({ ...props }) => (
+                        <div className="overflow-x-auto">
+                           <table {...props} />
+                        </div>
+                     ),
+                  }}
+               >
+                  {scenario}
+               </ReactMarkdown>
+            )}
+         </div>
 
-
-         {chatData && chatData.length > 0 ? (
+         {chatData && chatData.length > 0 && (
             <div>
                {chatData.map((message) => (
                   <div
@@ -34,8 +51,10 @@ const AgentData = () => {
                ))}
                <div ref={messagesEndRef} />
             </div>
-         ) : (
-            <div className="flex items-center justify-center h-full">
+         )}
+
+         {!scenario && !chatData && (
+            <div className="flex items-center justify-center w-full h-full">
                <p className="opacity-50 text-lg">No agent data</p>
             </div>
          )}
