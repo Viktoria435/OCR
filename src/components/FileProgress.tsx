@@ -36,7 +36,7 @@ const FileProgress = () => {
          startUpload();
          setUploadStarted(true);
       }
-   // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [selectedFiles]);
 
    useEffect(() => {
@@ -102,8 +102,8 @@ const FileProgress = () => {
    };
 
    return (
-      <div>
-         <div className="bg-white flex rounded-md flex-col items-center justify-between h-[90%] w-full ">
+    
+         <div className="bg-white flex rounded-md flex-col items-center justify-between h-[90%] w-full py-3 gap-y-3">
             <div className="flex flex-col w-full gap-y-5 items-end">
                {/* <button
                   onClick={() => setIsOpen(true)}
@@ -113,33 +113,32 @@ const FileProgress = () => {
                   Add New Patient
                </button> */}
                <button
-            className={`${
-               isFilesUpload
-                  ? "bg-[#595959] cursor-pointer"
-                  : "bg-[#a2a2a2] cursor-not-allowed"
-            } flex justify-between items-center w-full text-white font-semibold py-4 px-3 text-lg rounded-md  `}
-            onClick={() => setIsOpen(true)}
-            disabled={!isFilesUpload}
-
-         >
-            <div className="bg-white rounded-md py-1 px-5">
-               <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  className="size-6 text-gray-500"
+                  className={`${
+                     isFilesUpload
+                        ? "bg-[#595959] cursor-pointer"
+                        : "bg-[#a2a2a2] cursor-not-allowed"
+                  } flex justify-between items-center w-full text-white font-semibold py-4 px-3 text-lg rounded-md  `}
+                  onClick={() => setIsOpen(true)}
+                  disabled={!isFilesUpload}
                >
-                  <path
-                     strokeLinecap="round"
-                     strokeLinejoin="round"
-                     d="m8.25 4.5 7.5 7.5-7.5 7.5"
-                  />
-               </svg>
-            </div>
-            Add New Patient
-         </button>
+                  <div className="bg-white rounded-md py-1 px-5">
+                     <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="size-6 text-gray-500"
+                     >
+                        <path
+                           strokeLinecap="round"
+                           strokeLinejoin="round"
+                           d="m8.25 4.5 7.5 7.5-7.5 7.5"
+                        />
+                     </svg>
+                  </div>
+                  Add New Patient
+               </button>
                <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                   <div className="text-center">
                      <UploaderFileModal
@@ -148,7 +147,7 @@ const FileProgress = () => {
                      />
                   </div>
                </Modal>
-               <div className="w-full text-start min-h-32 max-h-32 space-y-3 px-1 flex-1 overflow-auto">
+               <div className="w-full text-start min-h-28 max-h-28 space-y-3 px-1 flex-1 overflow-auto">
                   {selectedFiles.map((file, index) => (
                      <div key={index} className="w-full space-y-1">
                         <div className="flex justify-between items-center">
@@ -159,7 +158,6 @@ const FileProgress = () => {
                               <span className="text-xs">
                                  {progressList[index] ?? 0}%
                               </span>
-                              
                            </div>
                         </div>
 
@@ -175,9 +173,9 @@ const FileProgress = () => {
                   ))}
                </div>
             </div>
-         </div>
          <GenerateConsult isActive={canGenerateConsult} />
-      </div>
+         </div>
+    
    );
 };
 

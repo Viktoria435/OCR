@@ -27,7 +27,7 @@ const AgentUploader = () => {
                      handleSubmit();
                   }
                }}
-               placeholder="Asc A Question"
+               placeholder="Ask A Question"
                className="w-full outline-0 overflow-hidden text-black text-start p-1 placeholder:text-center"
             />
             <button

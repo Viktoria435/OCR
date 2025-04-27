@@ -57,7 +57,7 @@ const FileHistory = () => {
                                     return `${day}/${month}/${year}`;
                                  })()}
                               </span>
-                              <span>MD: {file.patient.medical_card}</span>
+                              <span>MRN: {file.patient.medical_card}</span>
                            </div>
                         </div>
                         <div className="flex space-x-2">
