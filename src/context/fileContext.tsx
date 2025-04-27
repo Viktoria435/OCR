@@ -99,7 +99,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    //const [fileChanges, setFileChanges] = useState<string | null>(null);
    const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
    const [editingChanges, setEditingChanges] = useState<string | null>(null);
-   const [isFilesUpload, setIsFilesUpload] = useState<boolean>(false);
+   const [isFilesUpload, setIsFilesUpload] = useState<boolean>(true);
    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
    const [editingUploadedText, setEditingUploadedText] = useState<
@@ -154,6 +154,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setUploadedDocuments([]);
          setChatData([]);
       }
+      setSelectedFiles([]);
    }, [selectedFileId]);
 
    const uploadFiles = async (files: File[], reportId?: string) => {
@@ -386,8 +387,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    ) => {
 
       try {
-      setIsLoading(true);
-
+  
          const response = await deleteConsultFromReportRequest(
             reportId,
             consultId
@@ -444,7 +444,6 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const getDocumentById = async (documentId: string) => {
       try {
-      setIsLoading(true);
          const response = await getDocumentDetailsById(documentId);
          if (!response.successful) {
             setError(response.error?.message || "Unknown error occurred");
@@ -466,8 +465,6 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const getConsultById = async (consultId: string) => {
       try {
-      setIsLoading(true);
-
          const response = await getConsultDetailsById(consultId);
          if (!response.successful) {
             setError(response.error?.message || "Unknown error occurred");

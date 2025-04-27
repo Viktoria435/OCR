@@ -5,20 +5,20 @@ const DeleteReportButton = ({
 }: {
    reportId: string;
 }) => {
-   const { deleteReport } = useFileUpload();
+   const { deleteReport, isFilesUpload } = useFileUpload();
    const handleDelete = async () => {
       deleteReport(reportId);
    };
 
    return (
-         <button className="cursor-pointer" onClick={handleDelete}>
+         <button className="cursor-pointer" onClick={handleDelete} disabled={!isFilesUpload}>
             <svg
                xmlns="http://www.w3.org/2000/svg"
                fill="none"
                viewBox="0 0 24 24"
                strokeWidth={1.5}
                stroke="currentColor"
-               className="size-5 hover:text-red-500"
+               className="size-4 hover:text-red-500"
             >
                <path
                   strokeLinecap="round"

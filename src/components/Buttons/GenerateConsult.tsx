@@ -20,8 +20,8 @@ const GenerateConsult: FC<GenerateConsultProps> = ({ isActive }) => {
          <button
             className={`${
                isActive
-                  ? "bg-blue-500 cursor-pointer"
-                  : "bg-[#595959] cursor-not-allowed"
+                  ? "bg-[#595959] cursor-pointer"
+                  : "bg-[#a2a2a2] cursor-not-allowed"
             } flex justify-between items-center w-full text-white font-semibold py-4 px-3 text-lg rounded-md  `}
             onClick={handleGenerate}
          >
