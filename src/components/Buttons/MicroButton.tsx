@@ -10,14 +10,17 @@ const MicroButton = () => {
    const streamRef = useRef<MediaStream | null>(null);
 
    const requestMicrophonePermission = async () => {
+      console.log("[getUserMedia] Requesting microphone permission...");
       try {
          const stream = await navigator.mediaDevices.getUserMedia({
             audio: true,
          });
+         console.log("[getUserMedia] Microphone access granted.");
          streamRef.current = stream;
          setHasPermission(true);
          return true;
       } catch (error) {
+         console.error("[getUserMedia] Microphone access denied or error:");
          console.log(error);
          setHasPermission(false);
          return false;
@@ -25,20 +28,27 @@ const MicroButton = () => {
    };
 
    const startRecording = async () => {
+      console.log("[startRecording] Attempting to start recording...");
       if (!hasPermission) {
          const permissionGranted = await requestMicrophonePermission();
          if (!permissionGranted) return;
       }
 
-      if (!streamRef.current) return;
+      if (!streamRef.current) {
+         console.error("[recording] Stream is null, cannot start recording.");
+         return;
+      }
 
+      try {
       const mediaRecorder = new MediaRecorder(streamRef.current, {
          mimeType: "audio/mp4",
       });
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
+      console.log("[recording] MediaRecorder created and started.");
       mediaRecorder.ondataavailable = (event) => {
+         console.log("[MicroButton] ondataavailable event:", event);
          if (event.data.size > 0) {
             audioChunksRef.current.push(event.data);
          }
@@ -50,16 +60,25 @@ const MicroButton = () => {
          });
 
          if (selectedFileId) {
-            sendAudioChatMessage(selectedFileId, audioBlob);
+            try {
+            await sendAudioChatMessage(selectedFileId, audioBlob);
+            console.log("[send] Audio message sent successfully.");
+            } catch(error) {
+               console.error("[send] Failed to send audio message:", error);
+            }
          }
       };
 
       mediaRecorder.start();
       setRecording(true);
+   } catch (err) {
+      console.error("[recording] Error while starting MediaRecorder:", err);
+   }
    };
 
    const stopRecording = () => {
       if (mediaRecorderRef.current) {
+         console.log("[recording] Stopping recording...");
          mediaRecorderRef.current.stop();
          setRecording(false);
       }
