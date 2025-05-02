@@ -22,6 +22,10 @@ const MicroButton = () => {
       } catch (error) {
          console.error("[getUserMedia] Microphone access denied or error:");
          console.log(error);
+         alert(
+            "Microphone access denied.\n\nPlease check your browser settings and allow microphone access.\n\n" +
+            "For Chrome: Go to Settings > Privacy and security > Site Settings > Microphone."
+         );
          setHasPermission(false);
          return false;
       }
