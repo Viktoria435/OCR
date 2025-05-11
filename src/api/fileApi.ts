@@ -292,8 +292,15 @@ export const sendAudioRequest = async (
    file: Blob,
    reportId: string
 ): Promise<SendMessageResponse> => {
+
    const formData = new FormData();
-   formData.append("file", file, "audio.mp4");
+
+   const mimeType = file.type;
+   console.log(mimeType)
+   const extension = mimeType.split("/")[1];
+   const fileName = `audio.${extension || "mp4"}`;
+
+   formData.append("file", file, fileName);
 
    const token = checkToken();
 

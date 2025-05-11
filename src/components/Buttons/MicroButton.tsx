@@ -1,5 +1,13 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useFileUpload } from "../../context/fileContext";
+
+const getSupportedMimeType = () => {
+   const possibleTypes = ["audio/mp4", "audio/webm", "audio/ogg", "audio/aac"];
+
+   return (
+      possibleTypes.find((type) => MediaRecorder.isTypeSupported(type)) || ""
+   );
+};
 
 const MicroButton = () => {
    const { selectedFileId, sendAudioChatMessage } = useFileUpload();
@@ -8,19 +16,27 @@ const MicroButton = () => {
    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
    const audioChunksRef = useRef<Blob[]>([]);
    const streamRef = useRef<MediaStream | null>(null);
+   const audioContextRef = useRef<AudioContext | null>(null);
+   const analyserRef = useRef<AnalyserNode | null>(null);
+   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+   const intervalIdRef = useRef<number | null>(null);
+   const isManualStopRef = useRef(false);
+   const isRecordingInProgressRef = useRef(false);
+   const hasSpeechRef = useRef(false);
+
+   const SILENCE_THRESHOLD = 0.01;
+   const SILENCE_DURATION = 1000;
+   const VOICE_THRESHOLD = 0.03;
 
    const requestMicrophonePermission = async () => {
-      console.log("[getUserMedia] Requesting microphone permission...");
       try {
          const stream = await navigator.mediaDevices.getUserMedia({
             audio: true,
          });
-         console.log("[getUserMedia] Microphone access granted.");
          streamRef.current = stream;
          setHasPermission(true);
          return true;
       } catch (error) {
-         console.error("[getUserMedia] Microphone access denied or error:");
          console.log(error);
          alert(
             "Microphone access denied.\n\nPlease check your browser settings and allow microphone access.\n\n" +
@@ -31,80 +47,159 @@ const MicroButton = () => {
       }
    };
 
+   const startSilenceDetection = () => {
+      const AudioContextClass =
+         window.AudioContext ||
+         (window as typeof window & { webkitAudioContext: typeof AudioContext })
+            .webkitAudioContext;
+      const audioContext = new AudioContextClass();
+      const source = audioContext.createMediaStreamSource(streamRef.current!);
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+      source.connect(analyser);  
+
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+
+      const data = new Uint8Array(analyser.fftSize);
+      intervalIdRef.current = window.setInterval(() => {
+         analyser.getByteTimeDomainData(data);
+         let sumSquares = 0;
+         for (let i = 0; i < data.length; i++) {
+            const normalized = (data[i] - 128) / 128;
+            sumSquares += normalized * normalized;
+         }
+         const volume = Math.sqrt(sumSquares / data.length);
+
+         if (volume < SILENCE_THRESHOLD) {
+            if (!silenceTimerRef.current) {
+               silenceTimerRef.current = window.setTimeout(() => {
+                  console.log(
+                     "[Silence] Detected silence, stopping recording..."
+                  );
+                  stopRecording();
+               }, SILENCE_DURATION);
+            }
+         } else {
+            if (volume > VOICE_THRESHOLD) {
+               hasSpeechRef.current = true;
+            }
+            if (silenceTimerRef.current) {
+               clearTimeout(silenceTimerRef.current);
+               silenceTimerRef.current = null;
+            }
+         }
+      }, 200);
+   };
+
+   const stopSilenceDetection = () => {
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
+
+      if (intervalIdRef.current) {
+         clearInterval(intervalIdRef.current);
+         intervalIdRef.current = null;
+      }
+      analyserRef.current?.disconnect();
+      audioContextRef.current?.close();
+   };
+
    const startRecording = async () => {
-      console.log("[startRecording] Attempting to start recording...");
+      if (isRecordingInProgressRef.current) return;
+      isRecordingInProgressRef.current = true;
+
       if (!hasPermission) {
-         const permissionGranted = await requestMicrophonePermission();
-         if (!permissionGranted) return;
+         const granted = await requestMicrophonePermission();
+         if (!granted) return;
       }
 
-      if (!streamRef.current) {
-         console.error("[recording] Stream is null, cannot start recording.");
+      isManualStopRef.current = false;
+      hasSpeechRef.current = false;
+
+      const mimeType = getSupportedMimeType();
+      if (!mimeType) {
+         alert("Your browser doesn't support required audio format.");
          return;
       }
 
-      try {
-      const mediaRecorder = new MediaRecorder(streamRef.current, {
-         mimeType: "audio/mp4",
-      });
+      const mediaRecorder = new MediaRecorder(streamRef.current!, { mimeType });
+
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
-      console.log("[recording] MediaRecorder created and started.");
-      mediaRecorder.ondataavailable = (event) => {
-         console.log("[MicroButton] ondataavailable event:", event);
-         if (event.data.size > 0) {
-            audioChunksRef.current.push(event.data);
-         }
+      mediaRecorder.ondataavailable = (e) => {
+         if (e.data.size > 0) audioChunksRef.current.push(e.data);
       };
 
       mediaRecorder.onstop = async () => {
-         const audioBlob = new Blob(audioChunksRef.current, {
-            type: "audio/mp4",
-         });
+         stopSilenceDetection();
+         const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
 
-         if (selectedFileId) {
+         if (
+            !isManualStopRef.current &&
+            hasSpeechRef.current &&
+            selectedFileId
+         ) {
             try {
-            await sendAudioChatMessage(selectedFileId, audioBlob);
-            console.log("[send] Audio message sent successfully.");
-            } catch(error) {
-               console.error("[send] Failed to send audio message:", error);
+               console.log("[Auto] Sending audio...");
+               sendAudioChatMessage(selectedFileId, audioBlob);
+            } catch (err) {
+               console.error("Failed to send audio message:", err);
             }
+         } else {
+            console.log("[Skip] No speech or manually stopped — not sending.");
+         }
+
+         if (!isManualStopRef.current) {
+            console.log("[Auto] Restarting recording...");
+            startRecording();
          }
       };
 
       mediaRecorder.start();
       setRecording(true);
-   } catch (err) {
-      console.error("[recording] Error while starting MediaRecorder:", err);
-   }
+      startSilenceDetection();
    };
 
    const stopRecording = () => {
-      if (mediaRecorderRef.current) {
-         console.log("[recording] Stopping recording...");
+      isRecordingInProgressRef.current = false;
+
+      if (
+         mediaRecorderRef.current &&
+         mediaRecorderRef.current.state !== "inactive"
+      ) {
          mediaRecorderRef.current.stop();
-         setRecording(false);
       }
+      setRecording(false);
    };
 
-   const toggleRecording = async () => {
-      if (recording) {
-         stopRecording();
-      } else {
-         await startRecording();
-      }
-   };
+   useEffect(() => {
+      return () => {
+         stopSilenceDetection();
+         streamRef.current?.getTracks().forEach((track) => track.stop());
+      };
+   }, []);
 
    return (
       <div>
          <button
             disabled={!selectedFileId}
-            onClick={toggleRecording}
+            onClick={async () => {
+               if (recording) {
+                  isManualStopRef.current = true;
+                  stopRecording();
+               } else {
+                  await startRecording();
+               }
+            }}
             className={`bg-blue-500 h-full p-2 text-lg text-white font-semibold 
-               transition duration-500 rounded-full 
-               ${recording ? "bg-red-500 animate-pulse" : "hover:bg-blue-600"} 
-               disabled:bg-gray-400 disabled:cursor-not-allowed`}
+                  transition duration-500 rounded-full 
+                  ${
+                     recording
+                        ? "bg-red-500 animate-pulse"
+                        : "hover:bg-blue-600"
+                  } 
+                  disabled:bg-gray-400 disabled:cursor-not-allowed`}
          >
             <svg
                xmlns="http://www.w3.org/2000/svg"

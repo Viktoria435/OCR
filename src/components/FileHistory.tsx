@@ -36,7 +36,7 @@ const FileHistory = () => {
                            onClick={() => {
                               handleFileClick(file.id);
                            }}
-                           className="text-sm flex flex-col hover:text-blue-700 py-1"
+                           className="text-sm flex flex-col hover:text-blue-700 py-1 grow mr-3"
                         >
                            <span className="">{file.patient.name}</span>
                            <div className="flex justify-between text-xs">
