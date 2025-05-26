@@ -1,20 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import AgentData from "../components/AgentData";
 import Loading from "../components/Loading";
 import { useFileUpload } from "../context/fileContext";
 import AgentUploader from "../components/AgentUploader";
-// import ConsultButton from "../components/Buttons/ConsultButton";
-import Modal from "../components/Modals/Modal";
 // import UploaderFileModal from "../components/Modals/UploaderFileModal";
 // import SearchPatient from "../components/SearchPatient";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import Scenario from "../components/Scenario";
 // import UserProfile from "../components/UserProfile";
 // import FileProgress from "../components/FileProgress";
 import UploadedRecords from "../components/UploadedRecords";
 import GeneratedNotes from "../components/GeneratedNotes";
-import PushToEMRButton from "../components/Buttons/PushToEMRButton";
 import NavBar from "../components/NavBar";
 import PatientProfile from "../components/PatientProfile";
 import FileUploader from "../components/FileUploader";
@@ -45,8 +41,8 @@ const MainPage = () => {
             </div>
          )}
          {selectedFileId ? (
-            <main className="grid grid-cols-[1fr_2fr_1fr] w-full grow overflow-hidden divide-x-2 divide-gray-500">
-               <div className="flex flex-col p-8 overflow-hidden flex-grow justify-between bg-white">
+            <main className="grid grid-cols-[1fr_2fr_1fr] w-full grow overflow-hidden space-x-3 p-4">
+               <div className="flex flex-col p-8 overflow-hidden border-[3px] border-gray-300 flex-grow justify-between bg-white">
                   <PatientProfile />
                   <FileUploader />
                </div>
