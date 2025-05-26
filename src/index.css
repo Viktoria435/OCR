@@ -25,6 +25,10 @@ textarea::-webkit-scrollbar {
    display: none;
 }
 
+.custom-btn {
+  @apply bg-[#2a476c] w-full text-white p-3 text-lg rounded-md;
+}
+
 .prose h1, h2, h3{
   font-weight: 700;
   margin-bottom: 0.5rem;

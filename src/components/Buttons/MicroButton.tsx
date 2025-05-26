@@ -192,7 +192,7 @@ const MicroButton = () => {
                   await startRecording();
                }
             }}
-            className={`bg-blue-500 h-full p-2 text-lg text-white font-semibold 
+            className={`bg-[#2a476c]  h-full p-2 text-lg text-white font-semibold 
                   transition duration-500 rounded-full 
                   ${
                      recording

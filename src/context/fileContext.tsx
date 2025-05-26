@@ -74,11 +74,12 @@ interface FileUploadContextType {
    deleteFilesHistory: () => void;
    setIsLoading: (isLoading: boolean) => void;
    isEdited: boolean;
+   isConsultLoading: boolean;
    setIsEdited: (isEdited: boolean) => void;
    editingUploadedText: string | null;
    setEditingUploadedText: (text: string) => void;
    editingConsultText: string | null;
-   setEditingConsultText: (text: string) => void;
+   setEditingConsultText: (text: string | null) => void;
    editingChanges: string | null;
    setEditingChanges: (text: string) => void;
 }
@@ -118,6 +119,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    const [selectedConsultId, setSelectedConsultId] = useState<string | null>(
       null
    );
+   const [isConsultLoading, setIsConsultLoading] = useState<boolean>(false);
 
    // const uploadFile = async (file: File) => {
    //    setIsLoading(true);
@@ -467,6 +469,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const getConsultById = async (consultId: string) => {
       try {
+         setIsConsultLoading(true);
          const response = await getConsultDetailsById(consultId);
          if (!response.successful) {
             setError(response.error?.message || "Unknown error occurred");
@@ -483,6 +486,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setError("Failed to fetch document");
       } finally {
          setIsLoading(false);
+         setIsConsultLoading(false);
       }
    };
 
@@ -520,6 +524,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             getConsultById,
             documentText,
             consultText,
+            isConsultLoading,
             consultNotes,
             selectedDocumentId,
             selectedConsultId,

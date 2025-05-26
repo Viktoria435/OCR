@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFileUpload } from "../context/fileContext";
 import MicroButton from "./Buttons/MicroButton";
 import ReactMarkdown from "react-markdown";
@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm";
 const AgentData = () => {
    const { chatData, isMessageLoading, scenario } = useFileUpload();
    const messagesEndRef = useRef<HTMLDivElement | null>(null);
+   const [activeTab, setActiveTab] = useState<"summary" | "agent">("summary");
 
    useEffect(() => {
       if (messagesEndRef.current) {
@@ -15,11 +16,48 @@ const AgentData = () => {
    }, [chatData, isMessageLoading]);
 
    return (
-      <div className="bg-white flex flex-col items-start flex-grow text-black text-start rounded-md px-4  overflow-auto border-2 border-gray-300">
-         <div className="sticky flex w-full justify-between top-0 bg-white text-gray-500 text-start text-2xl p-2 font-medium">
-            Agent
-            <MicroButton />
-         </div>
+      <div className="bg-white flex flex-col space-y-6 items-start flex-grow text-black text-start rounded-md px-4 py-2 overflow-auto ">
+         <div className={`font-semibold text-start text-[22px] ${scenario ? "" : "hidden"}`}>Assistant</div>
+         {scenario && (
+            <div className="w-full">
+               <div className="flex w-full relative">
+                  <button
+                     onClick={() => setActiveTab("summary")}
+                     className={`w-full  font-medium transition-colors duration-300 ${
+                        activeTab === "summary"
+                           ? "text-black"
+                           : "text-gray-400 hover:text-black"
+                     }`}
+                  >
+                     Summary
+                  </button>
+
+                  <div className="relative w-full">
+                     <button
+                        onClick={() => setActiveTab("agent")}
+                        className={`w-full  font-medium transition-colors duration-300  ${
+                           activeTab === "agent"
+                              ? "text-black"
+                              : "text-gray-400 hover:text-black"
+                        }`}
+                     >
+                        Agent
+                     </button>
+                     <div className="absolute top-1/2 -translate-y-1/2 right-0">
+                        <MicroButton />
+                     </div>
+                  </div>
+               </div>
+               <div className="w-full h-1 mt-3 bg-gray-300 relative">
+                  <div
+                     className={`absolute h-1 bg-blue-800 w-1/2 transition-all duration-300 ${
+                        activeTab === "summary" ? "left-0" : "left-1/2"
+                     }`}
+                  ></div>
+               </div>
+            </div>
+         )}
+
          <div className="scenario w-full text-sm">
             {scenario && (
                <ReactMarkdown
@@ -53,9 +91,9 @@ const AgentData = () => {
             </div>
          )}
 
-         {!scenario && !chatData && (
+         {!scenario && (!chatData || chatData.length === 0) && (
             <div className="flex items-center justify-center w-full h-full">
-               <p className="opacity-50 text-lg">No agent data</p>
+               <p className="opacity-50 text-lg">No assistant data</p>
             </div>
          )}
 

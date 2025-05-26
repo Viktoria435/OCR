@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import { useFileUpload } from "../context/fileContext";
 import { formatDateToMDY } from "../utils/Convertation";
+import Modal from "./Modals/Modal";
+import ReactMarkdown from "react-markdown";
+import SaveButton from "./Buttons/SaveButton";
 
 const GeneratedNotes = () => {
    const {
@@ -12,22 +14,14 @@ const GeneratedNotes = () => {
       setIsEdited,
       setEditingConsultText,
       selectedFileId,
+      isConsultLoading,
    } = useFileUpload();
+
    const [isEditing, setIsEditing] = useState(false);
    const [editText, setEditText] = useState(consultText || "");
-   const [activeTab, setActiveTab] = useState<string | null>(null);
    const [isDeleting, setIsDeleting] = useState<boolean>(false);
-
-   const handleTabClick = (cId: string) => {
-      getConsultById(cId);
-      setActiveTab(cId);
-   };
-
-   useEffect(() => {
-      if (consultNotes.length > 0) {
-         setActiveTab(consultNotes[0].id);
-      }
-   }, [consultNotes]);
+   const [isModalOpen, setIsModalOpen] = useState(false);
+   const [activeConsultId, setActiveConsultId] = useState<string | null>(null);
 
    useEffect(() => {
       setEditText(consultText || "");
@@ -42,20 +36,22 @@ const GeneratedNotes = () => {
       setIsEdited(true);
    };
 
-   const handleDelete = async (consultId: string) => {
-      if (!selectedFileId) return;
+   const handleDelete = async () => {
+      if (!selectedFileId || !activeConsultId) return;
 
-      const targetConsult = consultNotes.find((cons) => cons.id === consultId);
+      const targetConsult = consultNotes.find(
+         (cons) => cons.id === activeConsultId
+      );
       if (!targetConsult) return;
 
       setIsDeleting(true);
       try {
-         await deleteConsultFromReport(selectedFileId, consultId);
+         await deleteConsultFromReport(selectedFileId, activeConsultId);
       } catch (error) {
          console.error("Error", error);
       } finally {
          setIsDeleting(false);
-         setActiveTab(null);
+         setIsModalOpen(false);
       }
    };
 
@@ -64,76 +60,81 @@ const GeneratedNotes = () => {
       setEditingConsultText(editText);
    };
 
-   const renderContent = () => {
-      const doc = consultNotes.find((c) => c.id === activeTab);
-      if (!doc) {
-         return (
-            <div className="flex justify-center items-center h-full text-gray-400">
-               <p className="text-black opacity-50">No generated notes</p>
-            </div>
-         );
-      }
-      return (
-         <div className="flex-1 h-full">
-            {isEditing ? (
-               <textarea
-                  value={editText}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className="w-full h-full resize-none focus:outline-none"
-               />
-            ) : (
-               <div className="space-y-2 p-1 prose">
-                  <ReactMarkdown>{consultText}</ReactMarkdown>
-               </div>
-            )}
-         </div>
-      );
+   const handleTabClick = (cId: string) => {
+      getConsultById(cId);
+      setActiveConsultId(cId);
+      getConsultById(cId);
+      setIsModalOpen(true);
    };
 
+   const handleCloseModal = () => {
+      setIsModalOpen(false);
+      setEditingConsultText(null);
+      setIsEdited(false);
+      setEditText(consultText || "");
+   }
+
+   const hasNotes = consultNotes && consultNotes.length > 0;
+
+   const renderContent = () => (
+      <div className="flex-1 h-full">
+         {isConsultLoading ? (
+            <div className="w-full h-full flex items-center justify-center">
+               <span className="text-gray-500">Loading...</span>
+            </div>
+         ) : isEditing ? (
+            <textarea
+               value={editText}
+               onChange={handleChange}
+               onBlur={handleBlur}
+               className="w-full h-full resize-none focus:outline-none"
+            />
+         ) : (
+            <div className="prose break-words">
+               <ReactMarkdown>{consultText}</ReactMarkdown>
+            </div>
+         )}
+      </div>
+   );
+
    return (
-      <div className="flex flex-col w-full h-full">
-         <ul className="flex flex-wrap w-full ">
-            {consultNotes?.map((cons, index) => {
-               const isFirst = index === 0;
-               const isLast = index === consultNotes.length;
+      <div className="flex flex-col p-5 w-full h-full bg-white border-[3px] border-gray-300 rounded">
+         {hasNotes ? (
+            <>
+               <p className="font-semibold text-start text-[22px] px-3 mb-4">
+                  Generated Notes
+               </p>
 
-               return (
-                  <li key={cons.id} className="flex-1 min-w-[150px]">
-                     <button
-                        onClick={() => handleTabClick(cons.id)}
-                        className={`w-full flex py-4 px-2 text-gray-700 bg-white border-t-2 border-b-2
-              ${isFirst ? "border-l-2" : ""}
-              ${!isLast ? "border-r-2" : ""}
-              ${
-                 activeTab === cons.id
-                    ? "border-gray-300 border-b-transparent z-10"
-                    : "hover:bg-gray-50 border-gray-300"
-              }`}
+               <ul className="w-full overflow-y-auto pr-3 space-y-1">
+                  {consultNotes.map((note) => (
+                     <li
+                        key={note.id}
+                        onClick={() => handleTabClick(note.id)}
+                        className="p-7 border-2 text-start border-gray-300 rounded-md cursor-pointer hover:bg-gray-50"
                      >
-                        <input type="checkbox" className="mr-2" />
-                        <p className="truncate text-ellipsis whitespace-nowrap overflow-hidden">
-                           {formatDateToMDY(cons.datetimeInserted)}
+                        <p className="text-lg text-[#2f6eba] hover:text-blue-900 font-semibold">
+                           {note.title}
                         </p>
-                     </button>
-                  </li>
-               );
-            })}
-         </ul>
+                        <p className="text-lg">
+                           {formatDateToMDY(note.datetimeInserted)}
+                        </p>
+                     </li>
+                  ))}
+               </ul>
+            </>
+         ) : (
+            <div className="text-gray-500 text-center text-lg w-full h-full flex items-center justify-center">
+               No generated data
+            </div>
+         )}
 
-         <div
-            className={`bg-white flex-grow text-black rounded-b-md ${
-               consultNotes.length === 0 ? "border-t-2" : ""
-            } border-x-2 border-b-2 border-gray-300 text-start px-4 text-lg h-full flex flex-col overflow-auto ${
-               isEditing ? "overflow-hidden" : ""
-            }`}
-         >
-            <div className="relative">
-               {activeTab && consultNotes.length > 0 && (
-                  <div>
+         <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+            <div className="w-[40vw] break-words flex-grow ">
+               <div className="w-full h-[70vh] mt-6 flex flex-col overflow-auto bg-white p-4 rounded text-start break-words">
+                  <div className="flex justify-start">
                      <button
-                        className="absolute cursor-pointer top-2 right-10 text-xl"
                         onClick={handleEditClick}
+                        className={`absolute cursor-pointer right-20 text-xl ${isConsultLoading ? "hidden" : ""}`}
                      >
                         <svg
                            xmlns="http://www.w3.org/2000/svg"
@@ -151,8 +152,8 @@ const GeneratedNotes = () => {
                         </svg>
                      </button>
                      <button
-                        className="absolute cursor-pointer top-2 right-0 text-xl"
-                        onClick={() => handleDelete(activeTab)}
+                        onClick={handleDelete}
+                        className={`absolute cursor-pointer right-10 text-xl ${isConsultLoading ? "hidden" : ""}`}
                         disabled={isDeleting}
                      >
                         {isDeleting ? (
@@ -194,10 +195,13 @@ const GeneratedNotes = () => {
                         )}
                      </button>
                   </div>
-               )}
+                  {renderContent()}
+               </div>
+               <div className="mt-1">
+                  <SaveButton />
+               </div>
             </div>
-            <div className={`flex-grow`}>{renderContent()}</div>
-         </div>
+         </Modal>
       </div>
    );
 };

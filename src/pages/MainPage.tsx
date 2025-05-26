@@ -5,7 +5,6 @@ import Loading from "../components/Loading";
 import { useFileUpload } from "../context/fileContext";
 import AgentUploader from "../components/AgentUploader";
 // import ConsultButton from "../components/Buttons/ConsultButton";
-import SaveButton from "../components/Buttons/SaveButton";
 import Modal from "../components/Modals/Modal";
 // import UploaderFileModal from "../components/Modals/UploaderFileModal";
 import SearchPatient from "../components/SearchPatient";
@@ -16,7 +15,7 @@ import UserProfile from "../components/UserProfile";
 import FileProgress from "../components/FileProgress";
 import UploadedRecords from "../components/UploadedRecords";
 import GeneratedNotes from "../components/GeneratedNotes";
-import PushToEMRButton from "../components/Buttons/PushToEMRButton";
+import ViewFullSumButton from "../components/Buttons/ViewFullSumButton";
 
 const MainPage = () => {
    const navigate = useNavigate();
@@ -33,13 +32,13 @@ const MainPage = () => {
    }, [navigate, getReports]);
 
    return (
-      <div className="grid grid-cols-[1fr_2fr_1fr] w-full h-screen overflow-hidden divide-x-2 divide-gray-500">
+      <div className="grid grid-cols-[1fr_2fr_1fr] gap-x-3 p-6 w-full bg-[#f6f8fb] h-screen overflow-hidden">
          {isLoading && (
             <div className="absolute inset-0 flex z-100 items-center justify-center bg-black/20 ">
                <Loading />
             </div>
          )}
-         <div className="flex flex-col p-8 overflow-hidden flex-grow justify-between bg-white">
+         <div className="flex flex-col overflow-hidden flex-grow justify-between">
             {/* <p className="text-[#434343] font-bold text-xl underline">
                Query & Upload
             </p>
@@ -54,14 +53,8 @@ const MainPage = () => {
             {/* <UploadFileButton onClick={() => setIsOpenUploader(true)} /> */}
             {/* <DeleteHistory /> */}
          </div>
-         <div className="flex flex-col p-8 gap-y-5 overflow-hidden bg-gray-100">
+         <div className="flex flex-col overflow-hidden">
             <div className="flex relative w-full">
-               <div className="flex items-center justify-between w-full">
-               <p className="text-gray-500 text-2xl font-medium">
-                  Generated Notes
-               </p>
-               <PushToEMRButton />
-               </div>
                <div className="absolute left-0 top-1/2 transform -translate-y-1/2"></div>
                {/* <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
                   <ConsultButton />
@@ -69,29 +62,18 @@ const MainPage = () => {
                <div className="absolute right-32 top-1/2 transform -translate-y-1/2">
                   <ScenarioButton handleOpen={() => setIsOpenScenario(true)} />
                </div> */}
-               <div className="absolute right-1/2 top-1/2 transform -translate-y-1/2 translate-x-1/2">
-                  <SaveButton />
-               </div>
+            </div>
+            <div className="flex-grow overflow-auto mb-3 h-full">
+               <UploadedRecords />
             </div>
             <div className="flex-grow overflow-auto h-full">
                <GeneratedNotes />
             </div>
-            <div className="flex items-center justify-between w-full">
-            <p className="text-gray-500 text-start text-2xl  font-medium">
-               Uploaded Records
-            </p>
-            <PushToEMRButton />
-               </div>
-            <div className="flex-grow overflow-auto h-full">
-               <UploadedRecords />
-            </div>
          </div>
-
-         <div className="flex flex-col p-4 gap-y-5 overflow-hidden grow bg-white ">
-
+         <div className="flex flex-col gap-y-5 bg-white border-[3px] p-2 border-gray-300 rounded overflow-hidden grow">
                <AgentData />
+               <ViewFullSumButton/>
                <AgentUploader />
-
          </div>
 
          {/* <Modal

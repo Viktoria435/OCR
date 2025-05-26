@@ -17,7 +17,7 @@ const AgentUploader = () => {
    };
 
    return (
-      <div className="flex flex-col border-2 border-gray-300 rounded-md">
+      <div className="flex flex-col border-[3px] border-gray-300 rounded-md">
          <div className="bg-white w-full flex rounded-md justify-between items-center p-2 gap-y-5">
             <input
                value={textInput}

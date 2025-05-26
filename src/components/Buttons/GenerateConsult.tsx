@@ -20,12 +20,12 @@ const GenerateConsult: FC<GenerateConsultProps> = ({ isActive }) => {
          <button
             className={`${
                isActive
-                  ? "bg-[#595959] cursor-pointer"
+                  ? "bg-[#2a476c] cursor-pointer"
                   : "bg-[#a2a2a2] cursor-not-allowed"
-            } flex justify-between items-center w-full text-white font-semibold py-4 px-3 text-lg rounded-md  `}
+            } custom-btn`}
             onClick={handleGenerate}
          >
-            <div className="bg-white rounded-md py-1 px-5">
+            {/* <div className="bg-white rounded-md py-1 px-5">
                <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -40,8 +40,8 @@ const GenerateConsult: FC<GenerateConsultProps> = ({ isActive }) => {
                      d="m8.25 4.5 7.5 7.5-7.5 7.5"
                   />
                </svg>
-            </div>
-            Generate Consult
+            </div> */}
+            <strong>Generate</strong> Note
          </button>
       </div>
    );
