@@ -1,4 +1,4 @@
-import {  updateConsult, updateDocument } from "../../api/fileApi";
+import { updateConsult, updateDocument } from "../../api/fileApi";
 import { useFileUpload } from "../../context/fileContext";
 
 const SaveButton = () => {
@@ -11,26 +11,35 @@ const SaveButton = () => {
       isEdited,
       editingUploadedText,
       editingConsultText,
-      setIsEdited
+      setIsEdited,
    } = useFileUpload();
 
    const handleSave = async () => {
-      if (editingUploadedText && selectedFileId && selectedDocumentId && editingUploadedText !== "") {
+      if (
+         editingUploadedText &&
+         selectedFileId &&
+         selectedDocumentId &&
+         editingUploadedText !== ""
+      ) {
          try {
             const response = await updateDocument({
                documentId: selectedDocumentId,
                reportId: selectedFileId,
-               text: editingUploadedText
-             }
-             );
-             setDocumentText(response.data.content);
+               text: editingUploadedText,
+            });
+            setDocumentText(response.data.content);
             setIsEdited(false);
          } catch (error) {
             console.error("Error saving:", error);
          }
       }
 
-      if (editingConsultText && selectedFileId && selectedConsultId && editingConsultText !== "") {
+      if (
+         editingConsultText &&
+         selectedFileId &&
+         selectedConsultId &&
+         editingConsultText !== ""
+      ) {
          try {
             const response = await updateConsult(
                selectedConsultId,
@@ -46,9 +55,10 @@ const SaveButton = () => {
 
    return (
       <button
-         hidden={!isEdited}
          onClick={handleSave}
-         className="bg-blue-500 w-full py-2 px-8 text-sm text-white font-medium hover:bg-blue-600 transition duration-500 disabled:bg-blue-500"
+         className={`bg-blue-500 w-full py-2 px-8 text-sm text-white font-medium hover:bg-blue-600 transition duration-500 disabled:bg-blue-500 ${
+            isEdited ? "" : "opacity-40 pointer-events-none"
+         }`}
       >
          Save
       </button>

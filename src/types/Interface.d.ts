@@ -16,13 +16,10 @@ export interface IDocument {
 
 export interface IConsult {
    id: string;
+   title: string;
    datetimeInserted: string;
 }
 
-export interface IConsult {
-   id: string;
-   datetimeInserted: string;
-}
 
 export interface IPatient {
    id: string;
