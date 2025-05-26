@@ -5,7 +5,7 @@ import {
    useState,
    useEffect,
 } from "react";
-import { Chat, IConsult, IDocument, Message } from "../types/Interface";
+import { Chat, IConsult, IDocument, IPatient, Message } from "../types/Interface";
 import {
    getChatMessagesRequest,
    getAllReportsRequest,
@@ -81,6 +81,9 @@ interface FileUploadContextType {
    setEditingConsultText: (text: string) => void;
    editingChanges: string | null;
    setEditingChanges: (text: string) => void;
+   patientData: IPatient | null;
+   patientBufferData: IPatient | null; 
+   setPatientData: (patientData: IPatient | null) => void;
 }
 
 const FileUploadContext = createContext<FileUploadContextType | undefined>(
@@ -119,6 +122,10 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       null
    );
 
+   const [patientData, setPatientData] = useState<IPatient | null>(null);
+   const [patientBufferData, setPatientBufferData] = useState<IPatient | null>(null);
+
+
    // const uploadFile = async (file: File) => {
    //    setIsLoading(true);
    //    try {
@@ -153,6 +160,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setConsultNotes([]);
          setUploadedDocuments([]);
          setChatData([]);
+         setPatientData(null);
       }
       setEditingConsultText(null);
       setEditingUploadedText(null);
@@ -179,6 +187,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             setFileReport(response.data.report);
          setUploadedDocuments(response.data.documents);
          setConsultNotes(response.data.consult_note);
+        
+
          setIsEdited(false);
          const firstDocument = response.data.documents[0];
          if (firstDocument) {
@@ -219,6 +229,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          }
 
          setUploadedFiles(response.data.data);
+         setPatientBufferData(response.data.data[response.data.data.length - 1].patient);
          console.log(response.data.data);
       } catch (err: unknown) {
          console.error("Error fetching messages:", err);
@@ -512,7 +523,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             fileReport,
             setFileReport,
             selectedFiles,
-            setSelectedFiles,
+            setSelectedFiles, 
             // fileChanges,
             // setFileChanges,
             uploadedDocuments,
@@ -550,6 +561,9 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             editingConsultText,
             setEditingChanges,
             editingChanges,
+            patientData,
+            setPatientData,
+            patientBufferData,
          }}
       >
          {children}

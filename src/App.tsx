@@ -7,6 +7,22 @@ import { setNavigator } from "./services/navigatorService";
 function App() {
    const navigate = useNavigate();
    setNavigator(navigate);
+   // useEffect(() => {
+   //    const handleWindowDragOver = (e: DragEvent) => {
+   //      e.preventDefault();
+   //    };
+   //    const handleWindowDrop = (e: DragEvent) => {
+   //      e.preventDefault();
+   //    };
+  
+   //    window.addEventListener('dragover', handleWindowDragOver);
+   //    window.addEventListener('drop', handleWindowDrop);
+  
+   //    return () => {
+   //      window.removeEventListener('dragover', handleWindowDragOver);
+   //      window.removeEventListener('drop', handleWindowDrop);
+   //    };
+   //  }, []);
    return (
       <FileUploadProvider>
          <Routes>
