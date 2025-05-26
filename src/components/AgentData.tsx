@@ -8,12 +8,21 @@ const AgentData = () => {
    const { chatData, isMessageLoading, scenario } = useFileUpload();
    const messagesEndRef = useRef<HTMLDivElement | null>(null);
    const [activeTab, setActiveTab] = useState<"summary" | "agent">("summary");
+   const [isMicroButtonActive, setIsMicroButtonActive] = useState(false);
 
    useEffect(() => {
       if (messagesEndRef.current) {
          messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
       }
    }, [chatData, isMessageLoading]);
+
+   useEffect(() => {
+      if (activeTab === "agent") {
+         setIsMicroButtonActive(true);
+      } else {
+         setIsMicroButtonActive(false);
+      }
+   }, [activeTab]);
 
    return (
       <div className="bg-white flex flex-col space-y-6 items-start flex-grow text-black text-start rounded-md px-4 py-2 overflow-auto ">
@@ -44,7 +53,7 @@ const AgentData = () => {
                         Agent
                      </button>
                      <div className="absolute top-1/2 -translate-y-1/2 right-0">
-                        <MicroButton />
+                        <MicroButton isActive={isMicroButtonActive} />
                      </div>
                   </div>
                </div>
