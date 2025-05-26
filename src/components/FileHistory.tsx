@@ -1,18 +1,17 @@
 import { useFileUpload } from "../context/fileContext";
-import AddFileToReportButton from "./Buttons/AddFileToReportButton";
+import { IPatient } from "../types/Interface";
 import DeleteReportButton from "./Buttons/DeleteReportButton";
 
-const FileHistory = () => {
-   const { uploadedFiles, selectedFileId, setSelectedFileId, getChatDataById } =
+const FileHistory = ({ onClose }: { onClose: () => void }) => {
+   const { uploadedFiles, selectedFileId, setSelectedFileId, getChatDataById, setPatientData } =
       useFileUpload();
 
-   const handleFileClick = (fileId: string) => {
-      if (selectedFileId === fileId) {
-         setSelectedFileId(null);
-      } else {
+   const handleFileClick = (fileId: string, patientData: IPatient) => {
+
          setSelectedFileId(fileId);
          getChatDataById(fileId);
-      }
+         setPatientData(patientData);
+         onClose();
    };
 
    // const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
@@ -22,7 +21,7 @@ const FileHistory = () => {
    // };
 
    return (
-      <div className="bg-[#eeeeee] border-b-2 border-r-2 border-l-2  border-gray-300 h-52 text-black text-lg rounded-b-md text-start px-4 py-2 overflow-auto">
+      <div className="bg-[#eeeeee] border-b-2 border-r-2 border-l-2  border-gray-300 max-h-52 text-black text-lg rounded-b-md text-start px-4 py-2 overflow-auto">
          {uploadedFiles.length > 0 ? (
             <ul className="pl-1 flex flex-col-reverse">
                {uploadedFiles.map((file) => (
@@ -34,14 +33,14 @@ const FileHistory = () => {
                      >
                         <div
                            onClick={() => {
-                              handleFileClick(file.id);
+                              handleFileClick(file.id, file.patient);
                            }}
                            className="text-sm flex flex-col hover:text-blue-700 py-1 grow mr-3"
                         >
                            <span className="">{file.patient.name}</span>
-                           <div className="flex justify-between text-xs">
+                           {/* <div className="flex justify-between text-xs">
                               <span>
-                                 DOB:{` `}
+                                 DOB:
                                  {(() => {
                                     const date = new Date(
                                        file.patient.date_of_birth
@@ -58,10 +57,10 @@ const FileHistory = () => {
                                  })()}
                               </span>
                               <span>MRN: {file.patient.medical_card}</span>
-                           </div>
+                           </div> */}
                         </div>
                         <div className="flex space-x-2">
-                           <AddFileToReportButton reportId={file.id} />
+                           {/* <AddFileToReportButton reportId={file.id} /> */}
                            <DeleteReportButton reportId={file.id} />
                         </div>
                      </div>
