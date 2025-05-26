@@ -26,49 +26,53 @@ const AgentData = () => {
 
    return (
       <div className="bg-white flex flex-col space-y-6 items-start flex-grow text-black text-start rounded-md px-4 py-2 overflow-auto ">
-         <div className={`font-semibold text-start text-[22px] ${scenario ? "" : "hidden"}`}>Assistant</div>
-         {scenario && (
-            <div className="w-full">
-               <div className="flex w-full relative">
+         <div
+            className={`font-semibold text-start text-[22px] ${
+               scenario ? "" : "hidden"
+            }`}
+         >
+            Assistant
+         </div>
+         <div className="w-full">
+            <div className="flex w-full relative">
+               <button
+                  onClick={() => setActiveTab("summary")}
+                  className={`w-full  font-medium transition-colors duration-300 ${
+                     activeTab === "summary"
+                        ? "text-black"
+                        : "text-gray-400 hover:text-black"
+                  }`}
+               >
+                  Summary
+               </button>
+
+               <div className="relative w-full">
                   <button
-                     onClick={() => setActiveTab("summary")}
-                     className={`w-full  font-medium transition-colors duration-300 ${
-                        activeTab === "summary"
+                     onClick={() => setActiveTab("agent")}
+                     className={`w-full  font-medium transition-colors duration-300  ${
+                        activeTab === "agent"
                            ? "text-black"
                            : "text-gray-400 hover:text-black"
                      }`}
                   >
-                     Summary
+                     Agent
                   </button>
-
-                  <div className="relative w-full">
-                     <button
-                        onClick={() => setActiveTab("agent")}
-                        className={`w-full  font-medium transition-colors duration-300  ${
-                           activeTab === "agent"
-                              ? "text-black"
-                              : "text-gray-400 hover:text-black"
-                        }`}
-                     >
-                        Agent
-                     </button>
-                     <div className="absolute top-1/2 -translate-y-1/2 right-0">
-                        <MicroButton isActive={isMicroButtonActive} />
-                     </div>
+                  <div className="absolute top-1/2 -translate-y-1/2 right-0">
+                     <MicroButton isActive={isMicroButtonActive} />
                   </div>
                </div>
-               <div className="w-full h-1 mt-3 bg-gray-300 relative">
-                  <div
-                     className={`absolute h-1 bg-blue-800 w-1/2 transition-all duration-300 ${
-                        activeTab === "summary" ? "left-0" : "left-1/2"
-                     }`}
-                  ></div>
-               </div>
             </div>
-         )}
+            <div className="w-full h-1 mt-3 bg-gray-300 relative">
+               <div
+                  className={`absolute h-1 bg-blue-800 w-1/2 transition-all duration-300 ${
+                     activeTab === "summary" ? "left-0" : "left-1/2"
+                  }`}
+               ></div>
+            </div>
+         </div>
 
-         <div className="scenario w-full text-sm">
-            {scenario && (
+         {scenario && activeTab === "summary" && (
+            <div className="scenario w-full text-sm">
                <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
@@ -81,30 +85,40 @@ const AgentData = () => {
                >
                   {scenario}
                </ReactMarkdown>
-            )}
-         </div>
+            </div>
+         )}
 
-         {chatData && chatData.length > 0 && (
-            <div>
-               {chatData.map((message) => (
-                  <div
-                     key={message.id}
-                     className={`${
-                        message.author === "user" ? "font-bold" : ""
-                     }`}
-                  >
-                     {message.text}
+         {activeTab === "agent" && (
+            <div className="w-full text-sm">
+               {chatData && chatData.length > 0 ? (
+                  chatData.map((message) => (
+                     <div
+                        key={message.id}
+                        className={`${
+                           message.author === "user" ? "font-bold" : ""
+                        }`}
+                     >
+                        {message.text}
+                     </div>
+                  ))
+               ) : (
+                  <div className="flex items-center justify-center w-full h-full">
+                     <p className="opacity-50 text-lg">
+                        No questions asked yet
+                     </p>
                   </div>
-               ))}
+               )}
                <div ref={messagesEndRef} />
             </div>
          )}
 
-         {!scenario && (!chatData || chatData.length === 0) && (
-            <div className="flex items-center justify-center w-full h-full">
-               <p className="opacity-50 text-lg">No assistant data</p>
-            </div>
-         )}
+         {!scenario &&
+            activeTab === "summary" &&
+            (!chatData || chatData.length === 0) && (
+               <div className="flex items-center justify-center w-full h-full">
+                  <p className="opacity-50 text-lg">No assistant data</p>
+               </div>
+            )}
 
          {isMessageLoading && (
             <div className="flex space-x-2 justify-center items-center bg-white my-3">
