@@ -9,7 +9,7 @@ const getSupportedMimeType = () => {
    );
 };
 
-const MicroButton = () => {
+const MicroButton = ({ isActive }: { isActive: boolean }) => {
    const { selectedFileId, sendAudioChatMessage } = useFileUpload();
    const [recording, setRecording] = useState(false);
    const [hasPermission, setHasPermission] = useState(false);
@@ -183,7 +183,7 @@ const MicroButton = () => {
    return (
       <div>
          <button
-            disabled={!selectedFileId}
+            disabled={!selectedFileId || !isActive}
             onClick={async () => {
                if (recording) {
                   isManualStopRef.current = true;
@@ -197,7 +197,7 @@ const MicroButton = () => {
                   ${
                      recording
                         ? "bg-red-500 animate-pulse"
-                        : "hover:bg-blue-600"
+                        : "hover:bg-blue-950"
                   } 
                   disabled:bg-gray-400 disabled:cursor-not-allowed`}
          >
