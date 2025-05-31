@@ -31,6 +31,7 @@ const MainPage = () => {
       }
    }, [navigate, getReports]);
 
+
    return (
       <div className="h-screen flex flex-col">
          <NavBar />

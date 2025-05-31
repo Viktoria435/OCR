@@ -1,16 +1,14 @@
 import { useFileUpload } from "../context/fileContext";
-import { IPatient } from "../types/Interface";
 import DeleteReportButton from "./Buttons/DeleteReportButton";
 
 const FileHistory = ({ onClose }: { onClose: () => void }) => {
-   const { uploadedFiles, selectedFileId, setSelectedFileId, getChatDataById, setPatientData } =
+   const { uploadedFiles, selectedFileId, setSelectedFileId, getChatDataById } =
       useFileUpload();
 
-   const handleFileClick = (fileId: string, patientData: IPatient) => {
+   const handleFileClick = (fileId: string) => {
 
          setSelectedFileId(fileId);
          getChatDataById(fileId);
-         setPatientData(patientData);
          onClose();
    };
 
@@ -33,7 +31,7 @@ const FileHistory = ({ onClose }: { onClose: () => void }) => {
                      >
                         <div
                            onClick={() => {
-                              handleFileClick(file.id, file.patient);
+                              handleFileClick(file.id);
                            }}
                            className="text-sm flex flex-col hover:text-blue-700 py-1 grow mr-3"
                         >

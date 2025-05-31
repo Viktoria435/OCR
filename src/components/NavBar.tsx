@@ -3,7 +3,7 @@ import { useFileUpload } from "../context/fileContext";
 const NavBar = () => {
    const { setSelectedFileId } = useFileUpload();
    return (
-      <nav className="flex w-full items-center gap-x-20 h-18 py-3 pl-20 pr-3 font-geist bg-[#2a476c]">
+      <nav className="flex w-full items-center gap-x-20 min-h-18 py-3 pl-20 pr-3 font-geist bg-[#2a476c]">
          <h1
             onClick={() => {
                setSelectedFileId(null);

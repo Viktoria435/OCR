@@ -44,7 +44,7 @@ const SearchPatient = () => {
 
    return (
       <div className="flex flex-col relative">
-         <div className="flex justify-between border-2  border-gray-300  items-center bg-white p-2 rounded-sm text-start ">
+         <div className="flex justify-between border-2  border-gray-300  items-center bg-white p-2 rounded-t-sm text-start ">
             <div
                ref={inputRef}
                className="w-full flex"

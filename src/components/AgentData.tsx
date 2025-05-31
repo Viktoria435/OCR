@@ -25,7 +25,7 @@ const AgentData = () => {
    }, [activeTab]);
 
    return (
-      <div className="bg-white flex flex-col space-y-6 items-start flex-grow text-black text-start rounded-md px-4 py-2 overflow-auto ">
+      <div className="bg-white flex flex-col flex-grow space-y-6 items-start text-black text-start rounded-md px-4 py-2 overflow-auto ">
          <div
             className={`font-semibold text-start text-[22px] ${
                scenario ? "" : "hidden"
