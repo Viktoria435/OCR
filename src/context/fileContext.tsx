@@ -83,8 +83,7 @@ interface FileUploadContextType {
    editingChanges: string | null;
    setEditingChanges: (text: string) => void;
    patientData: IPatient | null;
-   patientBufferData: IPatient | null; 
-   setPatientData: (patientData: IPatient | null) => void;
+
 }
 
 const FileUploadContext = createContext<FileUploadContextType | undefined>(
@@ -125,7 +124,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    const [isConsultLoading, setIsConsultLoading] = useState<boolean>(false);
 
    const [patientData, setPatientData] = useState<IPatient | null>(null);
-   const [patientBufferData, setPatientBufferData] = useState<IPatient | null>(null);
+
 
 
    // const uploadFile = async (file: File) => {
@@ -163,6 +162,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setUploadedDocuments([]);
          setChatData([]);
          setPatientData(null);
+         setSelectedDocumentId(null);
+         setSelectedConsultId(null);
       }
       setEditingConsultText(null);
       setEditingUploadedText(null);
@@ -189,7 +190,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             setFileReport(response.data.report);
          setUploadedDocuments(response.data.documents);
          setConsultNotes(response.data.consult_note);
-        
+         setPatientData(response.data.patient);
 
          setIsEdited(false);
          const firstDocument = response.data.documents[0];
@@ -231,8 +232,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          }
 
          setUploadedFiles(response.data.data);
-         setPatientBufferData(response.data.data[response.data.data.length - 1].patient);
-         console.log(response.data.data);
+    
       } catch (err: unknown) {
          console.error("Error fetching messages:", err);
          setError("Failed to fetch messages");
@@ -256,6 +256,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setConsultNotes(response.data.consult_note);
          getAllMessages(response.data.id);
          setIsEdited(false);
+         setPatientData(response.data.patient);
          const firstDocument = response.data.documents[0];
          if (firstDocument) {
             await getDocumentById(firstDocument.id);
@@ -432,17 +433,23 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(true);
 
          const response = await deleteReportRequest(reportId);
-         if (!response.successful || response.data === null) {
+         if (!response.successful) {
             setError("Unknown error occurred");
          } else {
             setError(null);
             setIsEdited(false);
             getReports(100, 0);
             if (reportId === selectedFileId) {
+               setSelectedFileId(null);
+               setSelectedDocumentId(null);
+               setSelectedConsultId(null);   
+               setPatientData(null);
+               setUploadedDocuments([]);
+               setConsultNotes([]);
+               setChatData([]);     
                setFileReport(null);
                setScenario(null);
-               setSelectedFileId(null);
-               setChatData([]);
+            
             }
          }
       } catch (err: unknown) {
@@ -567,8 +574,6 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             setEditingChanges,
             editingChanges,
             patientData,
-            setPatientData,
-            patientBufferData,
          }}
       >
          {children}

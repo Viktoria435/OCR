@@ -38,6 +38,7 @@ const FileProgress = () => {
             }
             return updated;
          });
+         
 
       
          setUploadStarted(true);
@@ -119,7 +120,7 @@ const FileProgress = () => {
                {selectedFiles.map((file, index) => (
                   <div key={index} className="flex justify-between items-center border border-gray-300 rounded-md py-2 px-4">
                      <span className="truncate max-w-[70%]">{file.name}</span>
-                     <span className="text-xs">{fileProgress[index] ?? 0}%</span>
+                     <span className={`text-xs ${fileProgress[index] === 100 ? 'text-green-500' : fileProgress[index] < 100 && fileProgress[index] > 0  ? 'text-yellow-500' : 'text-red-500'}`}>{fileProgress[index] ?? 0}%</span>
                   </div>
                ))}
             </div>
