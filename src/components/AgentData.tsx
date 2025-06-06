@@ -8,6 +8,7 @@ const AgentData = () => {
    const { chatData, isMessageLoading, scenario } = useFileUpload();
    const messagesEndRef = useRef<HTMLDivElement | null>(null);
    const [activeTab, setActiveTab] = useState<"summary" | "agent">("summary");
+   const initialLengthRef = useRef(0);
    const [isMicroButtonActive, setIsMicroButtonActive] = useState(false);
 
    useEffect(() => {
@@ -24,8 +25,20 @@ const AgentData = () => {
       }
    }, [activeTab]);
 
+   useEffect(() => {
+      if (initialLengthRef.current === 0) {
+         initialLengthRef.current = chatData.length;
+      }
+
+      if (chatData.length === initialLengthRef.current + 1) {
+         setActiveTab("agent");
+
+         initialLengthRef.current = chatData.length;
+      }
+   }, [chatData.length]);
+
    return (
-      <div className="bg-white flex flex-col flex-grow space-y-6 items-start text-black text-start rounded-md px-4 py-2 overflow-auto ">
+      <div className="bg-white flex flex-col min-h-0 space-y-6 items-start text-black text-start rounded-md px-4 py-2 ">
          <div
             className={`font-semibold text-start text-[22px] ${
                scenario ? "" : "hidden"
@@ -70,47 +83,48 @@ const AgentData = () => {
                ></div>
             </div>
          </div>
+         <div className="flex flex-col grow min-h-0 w-full">
+            {scenario && activeTab === "summary" && (
+               <div className="scenario w-full flex-1 min-h-0 overflow-auto text-sm">
+                  <ReactMarkdown
+                     remarkPlugins={[remarkGfm]}
+                     components={{
+                        table: ({ ...props }) => (
+                           <div className="overflow-x-auto">
+                              <table {...props} />
+                           </div>
+                        ),
+                     }}
+                  >
+                     {scenario}
+                  </ReactMarkdown>
+               </div>
+            )}
 
-         {scenario && activeTab === "summary" && (
-            <div className="scenario w-full text-sm">
-               <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={{
-                     table: ({ ...props }) => (
-                        <div className="overflow-x-auto">
-                           <table {...props} />
+            {activeTab === "agent" && (
+               <div className="w-full text-sm overflow-auto ">
+                  {chatData && chatData.length > 0 ? (
+                     chatData.map((message) => (
+                        <div
+                           key={message.id}
+                           className={`whitespace-pre-line ${
+                              message.author === "user" ? "font-bold mt-2" : ""
+                           }`}
+                        >
+                           {message.text}
                         </div>
-                     ),
-                  }}
-               >
-                  {scenario}
-               </ReactMarkdown>
-            </div>
-         )}
-
-         {activeTab === "agent" && (
-            <div className="w-full text-sm">
-               {chatData && chatData.length > 0 ? (
-                  chatData.map((message) => (
-                     <div
-                        key={message.id}
-                        className={`${
-                           message.author === "user" ? "font-bold" : ""
-                        }`}
-                     >
-                        {message.text}
+                     ))
+                  ) : (
+                     <div className="flex items-center justify-center w-full h-full">
+                        <p className="opacity-50 text-lg">
+                           No questions asked yet
+                        </p>
                      </div>
-                  ))
-               ) : (
-                  <div className="flex items-center justify-center w-full h-full">
-                     <p className="opacity-50 text-lg">
-                        No questions asked yet
-                     </p>
-                  </div>
-               )}
-               <div ref={messagesEndRef} />
-            </div>
-         )}
+                  )}
+                  <div ref={messagesEndRef} />
+               </div>
+            )}
+         </div>
 
          {!scenario &&
             activeTab === "summary" &&
