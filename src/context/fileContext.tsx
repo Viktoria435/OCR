@@ -164,10 +164,11 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setPatientData(null);
          setSelectedDocumentId(null);
          setSelectedConsultId(null);
+      setSelectedFiles([]);
+
       }
       setEditingConsultText(null);
       setEditingUploadedText(null);
-      setSelectedFiles([]);
    }, [selectedFileId]);
 
    const uploadFiles = async (files: File[], reportId?: string) => {

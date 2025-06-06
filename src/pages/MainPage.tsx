@@ -14,8 +14,8 @@ import GeneratedNotes from "../components/GeneratedNotes";
 import NavBar from "../components/NavBar";
 import PatientProfile from "../components/PatientProfile";
 import FileUploader from "../components/FileUploader";
-import FileDropZone from "../components/FileDropZone";
 import ViewFullSumButton from "../components/Buttons/ViewFullSumButton";
+import NewPatientUploader from "../components/NewPatientUploader";
 
 const MainPage = () => {
    const navigate = useNavigate();
@@ -30,7 +30,6 @@ const MainPage = () => {
          return;
       }
    }, [navigate, getReports]);
-
 
    return (
       <div className="h-screen flex flex-col">
@@ -58,18 +57,22 @@ const MainPage = () => {
                      <GeneratedNotes />
                   </div>
                </div>
-               <div className="flex flex-col gap-y-5 bg-white border-[3px] p-2 border-gray-300 rounded overflow-hidden grow">
-                  <AgentData />
-                  <ViewFullSumButton />
-                  <AgentUploader />
+               <div className="flex flex-col h-full bg-white border-[3px] p-2 border-gray-300 rounded overflow-hidden">
+                  <div className="flex flex-col flex-1 min-h-0">
+                     <AgentData />
+                  </div>
+
+                  <div className="flex flex-col gap-y-3 shrink-0">
+                     <ViewFullSumButton />
+                     <AgentUploader />
+                  </div>
                </div>
             </main>
          ) : (
             <main className="flex items-center justify-center w-full h-full">
-               <FileDropZone />
+              <NewPatientUploader />
             </main>
          )}
-         
       </div>
    );
 };
