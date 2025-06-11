@@ -5,8 +5,8 @@ const PatientProfile: FC = () => {
 
 
    return (
-      <div className="bg-white rounded-md p-3 flex flex-col w-full items-center">
-         <div className="text-2xl font-medium mb-3    ">
+      <div className="bg-white rounded-md p-3 mb-2 flex flex-col w-full items-center">
+         <div className="text-2xl font-medium mb-3">
             {patientData?.name}
          </div>
          <div className="flex flex-col items-center text-sm  text-gray-500">

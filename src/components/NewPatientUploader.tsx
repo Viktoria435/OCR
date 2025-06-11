@@ -2,6 +2,7 @@ import { useState } from "react";
 import FileDropZone from "./FileDropZone";
 import { useFileUpload } from "../context/fileContext";
 import FileProgress from "./FileProgress";
+import GenerateRadioButton from "./Buttons/GenerateRadioButton";
 
 const NewPatientUploader = () => {
    const { setSelectedFiles, selectedFiles } = useFileUpload();
@@ -13,13 +14,16 @@ const NewPatientUploader = () => {
                <FileProgress />
             </div>
          ) : (
-            <FileDropZone
-               currentFiles={selectedFiles}
-               setFiles={(files) => {
-                  setSelectedFiles(files);
-                  setIsProcessing(true);
-               }}
-            />
+            <div>
+               <GenerateRadioButton />
+               <FileDropZone
+                  currentFiles={selectedFiles}
+                  setFiles={(files) => {
+                     setSelectedFiles(files);
+                     setIsProcessing(true);
+                  }}
+               />
+            </div>
          )}
       </div>
    );

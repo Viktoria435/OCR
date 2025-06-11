@@ -4,6 +4,7 @@ import {
    DeleteReportRequest,
    GetChatMessagesResponse,
    GetDetailsResponse,
+   GetDetailsResponseDocument,
    GetMessagesResponse,
    SendMessageRequest,
    SendMessageResponse,
@@ -11,6 +12,7 @@ import {
    UploadConsultReport,
    UploadFileResponse,
    UploadFilesResponse,
+   UserInfoResponse,
 } from "../types/Interface";
 import { checkToken, handleApiError } from "../utils/ApiUtils";
 
@@ -38,8 +40,25 @@ import { checkToken, handleApiError } from "../utils/ApiUtils";
 //    }
 // };
 
+export const getUserInfo = async (
+): Promise<UserInfoResponse> => {
+   const token = checkToken();
+   try {
+      const response = await api.get<UserInfoResponse>("/api/user/user", {
+         headers: {
+            Authorization: `Bearer ${token}`,
+         },
+      });
+      return response.data;
+   } catch (error: unknown) {
+      console.error("Error getting user info:", error);
+      throw new Error("Failed getting");
+   }
+};
+
 export const uploadFilesRequest = async (
-   files: File[]
+   files: File[],
+   isGenerate: boolean,
 ): Promise<UploadFilesResponse> => {
    const formData = new FormData();
    files.forEach((file) => {
@@ -55,33 +74,8 @@ export const uploadFilesRequest = async (
                "Content-Type": "multipart/form-data",
                Authorization: `Bearer ${token}`,
             },
-         }
-      );
-
-      return response.data;
-   } catch (error: unknown) {
-      handleApiError(error);
-      throw new Error("Failed to upload files to report");
-   }
-};
-
-export const uploadFilesToReportRequest = async (
-   files: File[],
-   reportId: string
-): Promise<UploadFilesResponse> => {
-   const formData = new FormData();
-   files.forEach((file) => {
-      formData.append("files", file);
-   });
-   const token = checkToken();
-   try {
-      const response = await api.post<UploadFilesResponse>(
-         `/api/report/${reportId}/documents/add`,
-         formData,
-         {
-            headers: {
-               "Content-Type": "multipart/form-data",
-               Authorization: `Bearer ${token}`,
+            params: {
+               generateNote: isGenerate,
             },
          }
       );
@@ -92,6 +86,69 @@ export const uploadFilesToReportRequest = async (
       throw new Error("Failed to upload files to report");
    }
 };
+
+// export const uploadFilesToReportRequest = async (
+//    files: File[],
+//    reportId: string,
+// ): Promise<UploadFilesResponse> => {
+//    const formData = new FormData();
+//    files.forEach((file) => {
+//       formData.append("files", file);
+//    });
+//    const token = checkToken();
+//    try {
+//       const response = await api.post<UploadFilesResponse>(
+//          `/api/report/${reportId}/documents/add`,
+//          formData,
+//          {
+//             headers: {
+//                "Content-Type": "multipart/form-data",
+//                Authorization: `Bearer ${token}`,
+//             },
+//          }
+//       );
+
+//       return response.data;
+//    } catch (error: unknown) {
+//       handleApiError(error);
+//       throw new Error("Failed to upload files to report");
+//    }
+// };
+
+export const uploadFilesToReportRequest = async (
+   files: File[],
+   reportId: string,
+   isGenerate: boolean,
+): Promise<UploadFilesResponse> => {
+   const formData = new FormData();
+
+   files.forEach((file) => {
+      formData.append("files", file);
+   });
+
+   const token = checkToken();
+   try {
+      const response = await api.post<UploadFilesResponse>(
+         `/api/report/${reportId}/documents/add`,
+         formData,
+         {
+            headers: {
+               "Content-Type": "multipart/form-data",
+               Authorization: `Bearer ${token}`,
+            },
+            params: {
+               generateNote: isGenerate,
+            },
+         }
+      );
+
+      return response.data;
+   } catch (error: unknown) {
+      handleApiError(error);
+      throw new Error("Failed to upload files to report");
+   }
+};
+
 
 // export const getAllReportsRequest = async (
 //    pageSize: number,
@@ -406,10 +463,10 @@ export const replaceReport = async (
 
 export const getDocumentDetailsById = async (
    documentId: string
-): Promise<GetDetailsResponse> => {
+): Promise<GetDetailsResponseDocument> => {
    const token = checkToken();
    try {
-      const response = await api.get<GetDetailsResponse>(
+      const response = await api.get<GetDetailsResponseDocument>(
          `/api/report/document/${documentId}`,
          {
             headers: {

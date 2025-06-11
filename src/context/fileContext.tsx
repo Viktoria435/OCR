@@ -5,7 +5,7 @@ import {
    useState,
    useEffect,
 } from "react";
-import { Chat, IConsult, IDocument, IPatient, Message } from "../types/Interface";
+import { Chat, IConsult, IDocument, IPatient, Message, UInfo } from "../types/Interface";
 import {
    getChatMessagesRequest,
    getAllReportsRequest,
@@ -22,6 +22,7 @@ import {
    deleteConsultFromReportRequest,
    getConsultDetailsById,
    generateConsultReport,
+   getUserInfo,
 } from "../api/fileApi";
 
 interface FileUploadContextType {
@@ -75,6 +76,7 @@ interface FileUploadContextType {
    setIsLoading: (isLoading: boolean) => void;
    isEdited: boolean;
    isConsultLoading: boolean;
+   isFilesUploading: boolean;
    setIsEdited: (isEdited: boolean) => void;
    editingUploadedText: string | null;
    setEditingUploadedText: (text: string) => void;
@@ -83,7 +85,10 @@ interface FileUploadContextType {
    editingChanges: string | null;
    setEditingChanges: (text: string) => void;
    patientData: IPatient | null;
-
+   userInfo: UInfo | null;
+   getInfo: () => void;
+   setShouldGenerateConsultation: (shouldGenerateConsultation: boolean) => void;
+   shouldGenerateConsultation: boolean;
 }
 
 const FileUploadContext = createContext<FileUploadContextType | undefined>(
@@ -122,9 +127,11 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       null
    );
    const [isConsultLoading, setIsConsultLoading] = useState<boolean>(false);
+   const [isFilesUploading, setIsFilesUploading] = useState<boolean>(false);
 
    const [patientData, setPatientData] = useState<IPatient | null>(null);
-
+   const [userInfo, setUserInfo] = useState<UInfo | null>(null);
+   const [shouldGenerateConsultation, setShouldGenerateConsultation] = useState<boolean>(false);
 
 
    // const uploadFile = async (file: File) => {
@@ -164,8 +171,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setPatientData(null);
          setSelectedDocumentId(null);
          setSelectedConsultId(null);
-      setSelectedFiles([]);
-
+         setSelectedFiles([]);
       }
       setEditingConsultText(null);
       setEditingUploadedText(null);
@@ -175,8 +181,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       setIsFilesUpload(false);
       try {
          const response = reportId
-            ? await uploadFilesToReportRequest(files, reportId)
-            : await uploadFilesRequest(files);
+            ? await uploadFilesToReportRequest(files, reportId, shouldGenerateConsultation)
+            : await uploadFilesRequest(files, shouldGenerateConsultation);
          if (!response.successful) {
             setError(response.error?.message || "Unknown error occurred");
          } else {
@@ -467,12 +473,13 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const getDocumentById = async (documentId: string) => {
       try {
+         setIsFilesUploading(true);
          const response = await getDocumentDetailsById(documentId);
-         if (!response.successful) {
-            setError(response.error?.message || "Unknown error occurred");
-         } else {
+         if (response.successful) {
             setError(null);
-            setDocumentText(response.data.content);
+            setDocumentText(response.data.base64);
+         } else {
+            setError(response.error?.message || "Unknown error occurred");
          }
       } catch (err: unknown) {
          if (err instanceof Error) {
@@ -483,6 +490,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setError("Failed to fetch document");
       } finally {
          setIsLoading(false);
+         setIsFilesUploading(false);
       }
    };
 
@@ -490,11 +498,12 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       try {
          setIsConsultLoading(true);
          const response = await getConsultDetailsById(consultId);
-         if (!response.successful) {
-            setError(response.error?.message || "Unknown error occurred");
-         } else {
+         if (response.successful) {
             setError(null);
             setConsultText(response.data.content);
+            setError(response.error?.message || "Unknown error occurred");
+         } else {
+            setError(response.error?.message || "Unknown error occurred");
          }
       } catch (err: unknown) {
          if (err instanceof Error) {
@@ -520,7 +529,24 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setIsLoading(false);
       }
    }
-   
+
+   const getInfo = async () => {
+      try {
+         const response = await getUserInfo();
+         if (!response.successful) {
+            setError(response.error?.message || "Failed to load user info");
+            return;
+         }
+         else {
+            setUserInfo(response.data);
+         }
+      } catch (err: unknown) {
+         console.error("Error fetching info:", err);
+         setError("Failed to fetch info");
+      } finally {
+         setIsLoading(false);
+      }
+   };
 
    return (
       <FileUploadContext.Provider
@@ -532,6 +558,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             isFilesUpload,
             isMessageLoading,
             getReports,
+            getInfo,
             fileReport,
             setFileReport,
             selectedFiles,
@@ -544,6 +571,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             documentText,
             consultText,
             isConsultLoading,
+            isFilesUploading,
             consultNotes,
             selectedDocumentId,
             selectedConsultId,
@@ -575,6 +603,9 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             setEditingChanges,
             editingChanges,
             patientData,
+            userInfo,
+            setShouldGenerateConsultation,
+            shouldGenerateConsultation
          }}
       >
          {children}

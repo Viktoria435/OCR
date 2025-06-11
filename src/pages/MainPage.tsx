@@ -3,12 +3,8 @@ import AgentData from "../components/AgentData";
 import Loading from "../components/Loading";
 import { useFileUpload } from "../context/fileContext";
 import AgentUploader from "../components/AgentUploader";
-// import UploaderFileModal from "../components/Modals/UploaderFileModal";
-// import SearchPatient from "../components/SearchPatient";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-// import UserProfile from "../components/UserProfile";
-// import FileProgress from "../components/FileProgress";
 import UploadedRecords from "../components/UploadedRecords";
 import GeneratedNotes from "../components/GeneratedNotes";
 import NavBar from "../components/NavBar";
@@ -19,9 +15,7 @@ import NewPatientUploader from "../components/NewPatientUploader";
 
 const MainPage = () => {
    const navigate = useNavigate();
-   const { isLoading, getReports, selectedFileId } = useFileUpload();
-   //const [isOpenUploader, setIsOpenUploader] = useState(false);
-   // const [isOpenScenario, setIsOpenScenario] = useState(false);
+   const { isLoading, getReports, selectedFileId, getInfo } = useFileUpload();
 
    useEffect(() => {
       const token = Cookies.get("accessToken");
@@ -30,6 +24,11 @@ const MainPage = () => {
          return;
       }
    }, [navigate, getReports]);
+
+   useEffect(() => {
+      getInfo();
+   // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, []);
 
    return (
       <div className="h-screen flex flex-col">
@@ -70,7 +69,7 @@ const MainPage = () => {
             </main>
          ) : (
             <main className="flex items-center justify-center w-full h-full">
-              <NewPatientUploader />
+               <NewPatientUploader />
             </main>
          )}
       </div>

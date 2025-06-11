@@ -63,7 +63,6 @@ const GeneratedNotes = () => {
    const handleTabClick = (cId: string) => {
       getConsultById(cId);
       setActiveConsultId(cId);
-      getConsultById(cId);
       setIsModalOpen(true);
    };
 

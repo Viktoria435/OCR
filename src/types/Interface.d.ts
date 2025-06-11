@@ -1,3 +1,20 @@
+export interface UserInfoResponse {
+   data: UInfo;
+   successful: boolean;
+   error: {
+      message: string;
+   };
+}
+
+export interface UInfo {
+   id: string;
+   email: string;
+   name: string;
+   specialty: string;
+   datetimeInserted: string;
+   datetimeUpdated: string;
+}
+
 export interface MessageOld {
    id: string;
    report: string;
@@ -19,7 +36,6 @@ export interface IConsult {
    title: string;
    datetimeInserted: string;
 }
-
 
 export interface IPatient {
    id: string;
@@ -52,7 +68,6 @@ export interface UploadFileResponse {
       message: string;
    } | null;
 }
-
 
 export interface UploadFilesResponse {
    data: Message;
@@ -137,12 +152,15 @@ export interface DeleteReportRequest {
 }
 
 export interface GetDetailsResponse {
-   data: {
-      id: string;
-      originalId: string;
-      reportId: string;
-      content: string;
-   }
+   data: { id: string; originalId: string; reportId: string; content: string };
+   successful: boolean;
+   error?: {
+      message: string;
+   } | null;
+}
+
+export interface GetDetailsResponseDocument {
+   data: { id: string; originalId: string; reportId: string; base64: string };
    successful: boolean;
    error?: {
       message: string;
@@ -160,4 +178,3 @@ interface UpdateConsultPayload {
    reportId: string;
    text: string;
 }
-

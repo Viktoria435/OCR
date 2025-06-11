@@ -3,7 +3,6 @@ import { loginUser } from "../api/authApi";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
-
 interface AuthFormProps {
    isLogin: boolean;
 }
@@ -16,7 +15,6 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ isLogin }) => {
       email: false,
       password: false,
    });
-
 
    const navigate = useNavigate();
 
@@ -107,7 +105,9 @@ const AuthLoginForm: React.FC<AuthFormProps> = ({ isLogin }) => {
                className={`bg-white border border-gray-200 p-2.5 rounded-md text-sm w-full focus:outline-none mb-4`}
             />
          </div>
-         <span className="text-red-500 min-h-[20px] text-sm font-medium block">{error}</span>
+         <span className="text-red-500 min-h-[20px] text-sm font-medium block">
+            {error}
+         </span>
          <button
             type="submit"
             className="mt-2 py-2.5 bg-[#447dfc] hover:bg-[#4460fc] text-sm text-white font-bold rounded-md transition"
