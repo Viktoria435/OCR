@@ -5,7 +5,14 @@ import {
    useState,
    useEffect,
 } from "react";
-import { Chat, IConsult, IDocument, IPatient, Message, UInfo } from "../types/Interface";
+import {
+   Chat,
+   IConsult,
+   IDocument,
+   IPatient,
+   Message,
+   UInfo,
+} from "../types/Interface";
 import {
    getChatMessagesRequest,
    getAllReportsRequest,
@@ -131,8 +138,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const [patientData, setPatientData] = useState<IPatient | null>(null);
    const [userInfo, setUserInfo] = useState<UInfo | null>(null);
-   const [shouldGenerateConsultation, setShouldGenerateConsultation] = useState<boolean>(false);
-
+   const [shouldGenerateConsultation, setShouldGenerateConsultation] =
+      useState<boolean>(false);
 
    // const uploadFile = async (file: File) => {
    //    setIsLoading(true);
@@ -173,6 +180,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setSelectedConsultId(null);
          setSelectedFiles([]);
       }
+      setChatData([]);
       setEditingConsultText(null);
       setEditingUploadedText(null);
    }, [selectedFileId]);
@@ -181,7 +189,11 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       setIsFilesUpload(false);
       try {
          const response = reportId
-            ? await uploadFilesToReportRequest(files, reportId, shouldGenerateConsultation)
+            ? await uploadFilesToReportRequest(
+                 files,
+                 reportId,
+                 shouldGenerateConsultation
+              )
             : await uploadFilesRequest(files, shouldGenerateConsultation);
          if (!response.successful) {
             setError(response.error?.message || "Unknown error occurred");
@@ -195,21 +207,22 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             getAllMessages(response.data.id);
             getReports(100, 0);
             setFileReport(response.data.report);
-         setUploadedDocuments(response.data.documents);
-         setConsultNotes(response.data.consult_note);
-         setPatientData(response.data.patient);
+            setUploadedDocuments(response.data.documents);
+            setConsultNotes(response.data.consult_note);
+            setPatientData(response.data.patient);
+            setShouldGenerateConsultation(false);
 
-         setIsEdited(false);
-         const firstDocument = response.data.documents[0];
-         if (firstDocument) {
-            await getDocumentById(firstDocument.id);
-            setSelectedDocumentId(firstDocument.id);
-         }
-         const firstConsult = response.data.consult_note[0];
-         if (firstConsult) {
-            await getConsultById(firstConsult.id);
-            setSelectedConsultId(firstConsult.id);
-         }
+            setIsEdited(false);
+            const firstDocument = response.data.documents[0];
+            if (firstDocument) {
+               await getDocumentById(firstDocument.id);
+               setSelectedDocumentId(firstDocument.id);
+            }
+            const firstConsult = response.data.consult_note[0];
+            if (firstConsult) {
+               await getConsultById(firstConsult.id);
+               setSelectedConsultId(firstConsult.id);
+            }
          }
       } catch (err: unknown) {
          if (err instanceof Error) {
@@ -239,7 +252,6 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          }
 
          setUploadedFiles(response.data.data);
-    
       } catch (err: unknown) {
          console.error("Error fetching messages:", err);
          setError("Failed to fetch messages");
@@ -337,19 +349,32 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             return;
          }
 
-         const transcription = response.data.transcription || "Audio";
-         setChatData((prevChatData) => [
-            ...prevChatData,
-            {
-               id: `temp-${Date.now()}`,
-               reportId: chatId,
-               author: "user",
-               text: transcription,
-               datetimeInserted: new Date().toISOString(),
-               datetimeUpdated: new Date().toISOString(),
-            },
-         ]);
-         setChatData((prevChatData) => [...prevChatData, response.data]);
+         if (response.data) {
+            const transcription = response.data.transcription || "Audio";
+            const answer = response.data.text || "Audio";
+            setChatData((prevChatData) => [
+               ...prevChatData,
+               {
+                  id: `temp-${Date.now()}`,
+                  reportId: chatId,
+                  author: "user",
+                  text: transcription,
+                  datetimeInserted: new Date().toISOString(),
+                  datetimeUpdated: new Date().toISOString(),
+               },
+            ]);
+            setChatData((prevChatData) => [
+               ...prevChatData,
+               {
+                  id: `temp-${Date.now()}`,
+                  reportId: chatId,
+                  author: "assistant",
+                  text: answer,
+                  datetimeInserted: new Date().toISOString(),
+                  datetimeUpdated: new Date().toISOString(),
+               },
+            ]);
+         }
       } catch (err: unknown) {
          console.error("Error fetching messages:", err);
 
@@ -377,7 +402,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       vsFileId: string
    ) => {
       try {
-      setIsLoading(true);
+         setIsLoading(true);
 
          const response = await deleteFileFromReportRequest(
             reportId,
@@ -408,9 +433,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
       reportId: string,
       consultId: string
    ) => {
-
       try {
-  
          const response = await deleteConsultFromReportRequest(
             reportId,
             consultId
@@ -437,7 +460,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
 
    const deleteReport = async (reportId: string) => {
       try {
-      setIsLoading(true);
+         setIsLoading(true);
 
          const response = await deleteReportRequest(reportId);
          if (!response.successful) {
@@ -449,14 +472,13 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             if (reportId === selectedFileId) {
                setSelectedFileId(null);
                setSelectedDocumentId(null);
-               setSelectedConsultId(null);   
+               setSelectedConsultId(null);
                setPatientData(null);
                setUploadedDocuments([]);
                setConsultNotes([]);
-               setChatData([]);     
+               setChatData([]);
                setFileReport(null);
                setScenario(null);
-            
             }
          }
       } catch (err: unknown) {
@@ -521,14 +543,14 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
    const generateConsult = async (reportId: string) => {
       try {
          setIsLoading(true);
-            await generateConsultReport(reportId);
-            getChatDataById(reportId);
+         await generateConsultReport(reportId);
+         getChatDataById(reportId);
       } catch (error) {
          console.error("Error:", error);
       } finally {
          setIsLoading(false);
       }
-   }
+   };
 
    const getInfo = async () => {
       try {
@@ -536,8 +558,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          if (!response.successful) {
             setError(response.error?.message || "Failed to load user info");
             return;
-         }
-         else {
+         } else {
             setUserInfo(response.data);
          }
       } catch (err: unknown) {
@@ -562,7 +583,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             fileReport,
             setFileReport,
             selectedFiles,
-            setSelectedFiles, 
+            setSelectedFiles,
             // fileChanges,
             // setFileChanges,
             uploadedDocuments,
@@ -605,7 +626,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
             patientData,
             userInfo,
             setShouldGenerateConsultation,
-            shouldGenerateConsultation
+            shouldGenerateConsultation,
          }}
       >
          {children}

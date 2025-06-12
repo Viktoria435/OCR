@@ -100,7 +100,7 @@ const FileProgress = () => {
    };
 
    return (
-      <div className="bg-transparentflex rounded-md flex-col items-center justify-between h-[90%] w-full py-3 gap-y-3">
+      <div className="bg-transparent flex rounded-md flex-col items-center justify-between h-full w-full py-3 gap-y-3">
          <div className="w-full px-2">
             {selectedFiles.length > 0 && (
                <div className="w-full mb-4">
@@ -116,7 +116,7 @@ const FileProgress = () => {
                </div>
             )}
 
-            <div className="text-start grow space-y-2 overflow-auto">
+            <div className="text-start grow space-y-2 overflow-y-auto max-h-[20vh]">
                {selectedFiles.map((file, index) => (
                   <div key={index} className="flex justify-between items-center border border-gray-300 rounded-md py-2 px-4 bg-white">
                      <span className="truncate max-w-[70%]">{file.name}</span>
