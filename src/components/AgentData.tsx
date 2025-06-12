@@ -115,11 +115,13 @@ const AgentData = () => {
                         </div>
                      ))
                   ) : (
-                     <div className="flex items-center justify-center w-full h-full">
-                        <p className="opacity-50 text-lg">
-                           No questions asked yet
-                        </p>
-                     </div>
+                    !isMessageLoading && (
+                        <div className="flex items-center justify-center w-full h-full">
+                           <p className="opacity-50 text-lg">
+                              No questions asked yet
+                           </p>
+                        </div>
+                     )
                   )}
                   <div ref={messagesEndRef} />
                </div>
