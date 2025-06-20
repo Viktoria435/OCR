@@ -185,7 +185,7 @@ const UploadedRecords = () => {
               ))}
             </ul>
             <div className="flex items-start justify-between w-full mt-auto space-x-4">
-              <div className="flex-1 hidden">
+              <div className="flex-1">
                 <GenerateConsult isActive={!isOpening} />
               </div>
               <div className="flex-1">

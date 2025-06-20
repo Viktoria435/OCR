@@ -25,7 +25,7 @@ const GenerateCheckbox: React.FC<GenerateCheckboxProps> = ({ reportId }) => {
             htmlFor="generate-note"
             className={`cursor-pointer text-blue-950 font-semibold  ${reportId ? "text-[15px]" : ""}`}
          >
-            Enable consult note generation
+            Auto Consult Note Generation
          </label>
       </div>
    );
