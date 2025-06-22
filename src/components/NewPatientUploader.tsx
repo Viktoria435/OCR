@@ -10,7 +10,7 @@ const NewPatientUploader = () => {
    return (
       <div>
          {isProcessing ? (
-            <div className="p-5 bg-white w-96 border-[3px] border-gray-300 rounded">
+            <div className="p-5 bg-white w-[400px] h-fit border-2 border-neutral-200 shadow-[0_0_35px_10px_rgba(96,165,250,0.2)] rounded-3xl ">
                <FileProgress />
             </div>
          ) : (

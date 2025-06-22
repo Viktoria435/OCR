@@ -5,7 +5,7 @@ import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import UserModal from "./Modals/UserModal";
 
 const NavBar = () => {
-   const { setSelectedFileId, userInfo } = useFileUpload();
+   const { setSelectedFileId, userInfo, setSelectedFiles } = useFileUpload();
    const [isModalOpen, setIsModalOpen] = useState(false);
    const userBlockRef = useRef<HTMLDivElement | null>(null);
    const modalRef = useRef<HTMLDivElement | null>(null);
@@ -47,7 +47,10 @@ const NavBar = () => {
    return (
       <nav className="flex w-full items-center justify-between min-h-18 py-3 px-10 font-geist bg-[#2a476c] relative">
          <h1
-            onClick={() => setSelectedFileId(null)}
+            onClick={() => {
+               setSelectedFileId(null);
+               setSelectedFiles([]);
+            }}
             className="text-3xl text-white cursor-pointer"
          >
             CANassist

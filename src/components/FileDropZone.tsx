@@ -100,6 +100,7 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({
             ref={inputRef}
             id="fileInput"
             type="file"
+            accept=".pdf,.docx,.txt,.xml,.jpg,.png,.jpeg,.gif,.xlsx"
             multiple
             onChange={handleFileChange}
             className="hidden"
