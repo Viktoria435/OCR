@@ -178,8 +178,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setPatientData(null);
          setSelectedDocumentId(null);
          setSelectedConsultId(null);
-         setSelectedFiles([]);
-      }
+      } 
+      setSelectedFiles([]);
       setChatData([]);
       setEditingConsultText(null);
       setEditingUploadedText(null);
