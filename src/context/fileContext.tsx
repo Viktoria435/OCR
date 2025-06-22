@@ -274,6 +274,7 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          setUploadedDocuments(response.data.documents);
          setConsultNotes(response.data.consult_note);
          getAllMessages(response.data.id);
+         setShouldGenerateConsultation(false);
          setIsEdited(false);
          setPatientData(response.data.patient);
          const firstDocument = response.data.documents[0];

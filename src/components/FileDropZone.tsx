@@ -58,7 +58,8 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({
 
    return (
       <div
-         className={`border-2 border-dashed rounded-md text-center transition 
+         className={` text-center transition
+            ${reportId ? "rounded-md border-2 border-gray-300" : "border-2 border-neutral-200 shadow-[0_0_35px_10px_rgba(96,165,250,0.2)] rounded-3xl"}
             ${
                isDragging
                   ? "border-blue-500 bg-blue-50 text-blue-600"
@@ -71,7 +72,7 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({
       >
          <label
             htmlFor="fileInput"
-            className= {`cursor-pointer flex flex-col justify-center gap-y-5 items-center select-none ${reportId ? "p-6" : "text-xl px-60 py-40"}`}
+            className= {`cursor-pointer flex flex-col justify-center gap-y-5 items-center select-none ${reportId ? "p-6" : "text-[22px] px-60 py-30"}`}
          >
             <svg
                xmlns="http://www.w3.org/2000/svg"
@@ -79,7 +80,7 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({
                viewBox="0 0 24 24"
                strokeWidth={1.5}
                stroke="currentColor"
-               className={`${reportId ? "size-10" : "size-13"}`}
+               className={`${reportId ? "size-10" : "size-15"} text-[#3b64ab]`}
             >
                <path
                   strokeLinecap="round"
@@ -87,15 +88,14 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({
                   d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
                />
             </svg>
-            <div>
+            <div className="text-black">
                {isDragging
                   ? "Release to upload files"
                   : "Drag and drop files here"}
                <br />
-               {/* <span>or Browse Files</span> */}
             </div>
          </label>
-         <p className={`p-2 ${reportId ? "text-[11px]" : "text-[13px]"}`}>You can upload CT scans, lab reports, pathology PDFs, or imaging screenshots here</p>
+         <p className={`mb-3 p-2 text-[#c1c2c4] ${reportId ? "text-[11px]" : "text-md"}`}>You can upload CT scans, lab reports, pathology PDFs, or imaging  {!reportId && <br />} screenshots here</p>
          <input
             ref={inputRef}
             id="fileInput"

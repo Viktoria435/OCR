@@ -41,7 +41,7 @@ const MainPage = () => {
          )}
          {selectedFileId ? (
             <main className="grid grid-cols-[1fr_2fr_1fr] w-full grow overflow-hidden space-x-4 p-4">
-               <div className="flex flex-col p-8 overflow-hidden border-[3px] border-gray-300 flex-grow justify-between bg-white">
+               <div className="flex flex-col py-5 px-5 overflow-hidden border-[3px] border-gray-300 flex-grow justify-between bg-white">
                   <PatientProfile />
                   <FileUploader />
                </div>
