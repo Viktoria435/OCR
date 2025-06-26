@@ -56,7 +56,7 @@ const SaveButton = () => {
    return (
       <button
          onClick={handleSave}
-         className={`bg-blue-500 w-full py-2 px-8 text-sm text-white font-medium hover:bg-blue-600 transition duration-500 disabled:bg-blue-500 ${
+         className={`bg-blue-500 w-1/4 rounded-xl cursor-pointer py-2 px-8 text-sm text-white font-medium hover:bg-blue-600 transition duration-500 disabled:bg-blue-500 ${
             isEdited ? "" : "opacity-40 pointer-events-none"
          }`}
       >

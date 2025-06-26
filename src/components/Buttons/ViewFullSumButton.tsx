@@ -23,7 +23,7 @@ const ViewFullSumButton = () => {
          </button>
          {isOpen && (
             <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-               <div className="h-[80vh] w-[80vw] p-4">
+               <div className="h-[70vh] w-[80vw] p-4">
                   <div className="scenario overflow-y-auto h-full w-full text-justify pr-3">
                   <ReactMarkdown
                      remarkPlugins={[remarkGfm]}
