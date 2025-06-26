@@ -128,7 +128,7 @@ const GeneratedNotes = () => {
          )}
 
          <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-            <div className="w-[40vw] break-words flex-grow ">
+            <div className="w-[80vw] break-words flex-grow">
                <div className="w-full h-[70vh] mt-6 flex flex-col overflow-auto bg-white p-4 rounded text-start break-words">
                   <div className="flex justify-start">
                      <button
@@ -196,7 +196,7 @@ const GeneratedNotes = () => {
                   </div>
                   {renderContent()}
                </div>
-               <div className="mt-1">
+               <div className="mt-3 w-full flex justify-end">
                   <SaveButton />
                </div>
             </div>
