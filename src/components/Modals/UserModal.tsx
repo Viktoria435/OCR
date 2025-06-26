@@ -52,7 +52,7 @@ const UserModal: React.FC<UserModalProps> = ({ userInfo, onClose }) => {
          <div className="flex flex-col w-full">
             <p className="font-bold mb-2">Compliance/Security</p>
             <button className="p-2 border-gray-400 border rounded-sm text-start">
-               HIPPA/Data Privacy Security Notice
+               HIPAA/Data Privacy Security Notice
             </button>
             <button className="p-2 border-gray-400 border rounded-sm text-start">
                Two Factor Authentication

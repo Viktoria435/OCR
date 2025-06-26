@@ -142,3 +142,18 @@ textarea::-webkit-scrollbar {
    font-weight: bold;
    color: #222;
 }
+.markdown-table {
+   table-layout: auto;
+   width: 100%; 
+   border-collapse: collapse;
+ }
+ 
+ .markdown-table th,
+ .markdown-table td {
+   width: 25%;
+   padding: 8px;
+   border: 1px solid #ccc;
+   text-align: left;
+   vertical-align: top;
+   overflow-wrap: break-word; 
+ }
