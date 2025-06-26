@@ -90,8 +90,8 @@ const AgentData = () => {
                      remarkPlugins={[remarkGfm]}
                      components={{
                         table: ({ ...props }) => (
-                           <div className="overflow-x-auto">
-                              <table {...props} />
+                           <div>
+                              <table className="markdown-table overflow-x-auto" {...props} />
                            </div>
                         ),
                      }}
@@ -103,26 +103,26 @@ const AgentData = () => {
 
             {activeTab === "agent" && (
                <div className="w-full text-sm overflow-auto ">
-                  {chatData && chatData.length > 0 ? (
-                     chatData.map((message) => (
-                        <div
-                           key={message.id}
-                           className={`whitespace-pre-line ${
-                              message.author === "user" ? "font-bold mt-2" : ""
-                           }`}
-                        >
-                           {message.text}
-                        </div>
-                     ))
-                  ) : (
-                    !isMessageLoading && (
-                        <div className="flex items-center justify-center w-full h-full">
-                           <p className="opacity-50 text-lg">
-                              No questions asked yet
-                           </p>
-                        </div>
-                     )
-                  )}
+                  {chatData && chatData.length > 0
+                     ? chatData.map((message) => (
+                          <div
+                             key={message.id}
+                             className={`whitespace-pre-line ${
+                                message.author === "user"
+                                   ? "font-bold mt-2"
+                                   : ""
+                             }`}
+                          >
+                             {message.text}
+                          </div>
+                       ))
+                     : !isMessageLoading && (
+                          <div className="flex items-center justify-center w-full h-full">
+                             <p className="opacity-50 text-lg">
+                                No questions asked yet
+                             </p>
+                          </div>
+                       )}
                   <div ref={messagesEndRef} />
                </div>
             )}
