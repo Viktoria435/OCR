@@ -500,7 +500,8 @@ export const FileUploadProvider = ({ children }: { children: ReactNode }) => {
          const response = await getDocumentDetailsById(documentId);
          if (response.successful) {
             setError(null);
-            setDocumentText(response.data.base64);
+            setDocumentText(response.data.content);
+            console.log(response.data);
          } else {
             setError(response.error?.message || "Unknown error occurred");
          }

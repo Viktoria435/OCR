@@ -159,13 +159,13 @@ export interface GetDetailsResponse {
    } | null;
 }
 
-export interface GetDetailsResponseDocument {
-   data: { id: string; originalId: string; reportId: string; base64: string };
-   successful: boolean;
-   error?: {
-      message: string;
-   } | null;
-}
+// export interface GetDetailsResponseDocument {
+//    data: { id: string; originalId: string; reportId: string; base64: string };
+//    successful: boolean;
+//    error?: {
+//       message: string;
+//    } | null;
+// }
 
 interface UpdateDocumentPayload {
    documentId: string;

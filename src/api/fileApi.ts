@@ -4,7 +4,6 @@ import {
    DeleteReportRequest,
    GetChatMessagesResponse,
    GetDetailsResponse,
-   GetDetailsResponseDocument,
    GetMessagesResponse,
    SendMessageRequest,
    SendMessageResponse,
@@ -463,10 +462,10 @@ export const replaceReport = async (
 
 export const getDocumentDetailsById = async (
    documentId: string
-): Promise<GetDetailsResponseDocument> => {
+): Promise<GetDetailsResponse> => {
    const token = checkToken();
    try {
-      const response = await api.get<GetDetailsResponseDocument>(
+      const response = await api.get<GetDetailsResponse>(
          `/api/report/document/${documentId}`,
          {
             headers: {
